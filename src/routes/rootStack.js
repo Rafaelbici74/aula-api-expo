@@ -15,42 +15,43 @@ export default function RootStack() {
       screenOptions={
         {
           headerStyle: {
-            backgroundColor: 'tomato'
-          }
+            backgroundColor: '#ffaaff'
+          },
         }
       }
     >
-      <Stack.Screen name="login"
+      <Stack.Screen
+        name="login"
         component={Login}
         options={{ title: 'Login' }}
       />
-
-      <Stack.Screen name="home"
+      <Stack.Screen
+        name="myTab"
         component={MyTabs}
-        options={{
-          title: 'Home',
-          headerShown: false
+        options={{ 
+          title: 'Home', 
+          headerShown: false 
         }}
       />
-
-      <Stack.Screen name="cadUsuario"
+      <Stack.Screen
+        name="cadUsuario"
         component={CadUsuario}
-        options={{ title: 'Cadastro de Usúario' }} />
-
+        options={{ title: 'Cadastro de usuário' }}
+      />
       <Stack.Screen
         name="recSenha"
         component={RecSenha}
         options={{
-          title: 'Recuperar Senha',
+          title: 'My home',
           headerStyle: {
             backgroundColor: '#f4df1e',
           },
-          headerTintColor: '#053d00',
+          headerTintColor: '#075000',
           headerTitleStyle: {
             fontWeight: 'bold',
           },
-        }} />
-
+        }}
+      />
     </Stack.Navigator>
   );
 }
