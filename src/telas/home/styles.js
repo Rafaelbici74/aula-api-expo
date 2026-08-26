@@ -14,7 +14,15 @@ export default StyleSheet.create({
 		paddingTop: 20,
         textAlign: 'center',
 	},
-	titulo: {
+
+    titulo: {
+		fontSize: 26,
+		fontWeight: '700',
+        color: colors.primaryDark,
+		marginTop: 50,
+        textAlign: 'center',
+	},
+	tituloProj: {
 		fontSize: 26,
 		fontWeight: '700',
         color: colors.primaryDark,

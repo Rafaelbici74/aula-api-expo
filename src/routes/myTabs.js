@@ -3,7 +3,7 @@ import { Ionicons } from '@expo/vector-icons';
 
 import HomeScreen from '../telas/home';
 import PerfilScreen from '../telas/perfil';
-import ItensScreen from '../telas/itens';
+import ConfiguracoesScreen from '../telas/configuracoes';
 
 const Tab = createBottomTabNavigator();
 
@@ -26,7 +26,7 @@ export default function TabNavigator() {
             iconName = focused ? 'home' : 'home-outline';
           } else if (route.name === 'Perfil') {
             iconName = focused ? 'person' : 'person-outline';
-          } else if (route.name === 'Itens') {
+          } else if (route.name === 'Configurações') {
             iconName = focused ? 'list' : 'list-outline';
           }
 
@@ -46,7 +46,7 @@ export default function TabNavigator() {
         options={{ title: 'Home' }}
       />
       <Tab.Screen name="Perfil" component={PerfilScreen} />
-      <Tab.Screen name="Itens" component={ItensScreen} />
+      <Tab.Screen name="Configurações" component={ConfiguracoesScreen} />
     </Tab.Navigator>
   );
 }
