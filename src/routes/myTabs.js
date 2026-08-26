@@ -24,9 +24,9 @@ export default function TabNavigator() {
           // Define o ícone baseado no nome da rota
           if (route.name === 'home') {
             iconName = focused ? 'home' : 'home-outline';
-          } else if (route.name === 'perfil') {
+          } else if (route.name === 'Perfil') {
             iconName = focused ? 'person' : 'person-outline';
-          } else if (route.name === 'itens') {
+          } else if (route.name === 'Itens') {
             iconName = focused ? 'list' : 'list-outline';
           }
 
@@ -34,19 +34,19 @@ export default function TabNavigator() {
           return <Ionicons name={iconName} size={size} color={color} />;
         },
         // Define as cores personalizadas que você quer usar
-        tabBarActiveTintColor: '#00FF00',   // Cor quando focado (focused)
-        tabBarInactiveTintColor: '#FF0000', // Cor quando desfocado
+        tabBarActiveTintColor: '#7f8fe8',   // Cor quando focado (focused)
+        tabBarInactiveTintColor: '#5e6381', // Cor quando desfocado
         // headerShown: false,
       })}      
     >
       <Tab.Screen
         name="home"
         component={HomeScreen}
-        // options={{ tabBarShowLabel: false }} 
+        // options={{  }} 
         options={{ title: 'Home' }}
       />
-      <Tab.Screen name="perfil" component={PerfilScreen} />
-      <Tab.Screen name="itens" component={ItensScreen} />
+      <Tab.Screen name="Perfil" component={PerfilScreen} />
+      <Tab.Screen name="Itens" component={ItensScreen} />
     </Tab.Navigator>
   );
 }

@@ -1,9 +1,12 @@
-import  { View, Text } from 'react-native';
+import { View, Text } from 'react-native';
+import styles from '../stylesGlobal';
 
 export default function RecSenha(){
     return(
-        <View>
-            <Text>RecSenha</Text>
+        <View style={styles.centeredScreen}>
+            <View style={styles.card}>
+                <Text style={styles.title}>Recuperar senha</Text>
+            </View>
         </View>
     );
 }

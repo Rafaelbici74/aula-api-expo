@@ -1,9 +1,10 @@
 import { StyleSheet } from 'react-native';
+import { colors } from '../../stylesGlobal';
 
 export default StyleSheet.create({
     container: {
         flex: 1,
-        backgroundColor: '#f5f5f5',
+        backgroundColor: colors.background,
         justifyContent: 'center',
         alignItems: 'center',
         paddingHorizontal: 24,
@@ -11,7 +12,7 @@ export default StyleSheet.create({
     card: {
         width: '100%',
         maxWidth: 360,
-        backgroundColor: '#ffffff',
+        backgroundColor: colors.surface,
         borderRadius: 7,
         padding: 10,
         shadowColor: '#000',
@@ -23,34 +24,34 @@ export default StyleSheet.create({
     title: {
         fontSize: 28,
         fontWeight: '700',
-        color: '#111827',
+        color: colors.text,
         marginBottom: 6,
     },
     subtitle: {
         fontSize: 15,
-        color: '#6b7280',
+        color: colors.mutedText,
         marginBottom: 24,
     },
     input: {
-        backgroundColor: '#f9fafb',
+        backgroundColor: colors.inputBackground,
         borderWidth: 1,
-        borderColor: '#e5e7eb',
+        borderColor: colors.border,
         borderRadius: 12,
         paddingHorizontal: 14,
         paddingVertical: 12,
         fontSize: 15,
-        color: '#111827',
+        color: colors.text,
         marginBottom: 14,
     },
     primaryButton: {
-        backgroundColor: '#111827',
+        backgroundColor: colors.primary,
         borderRadius: 7,
         paddingVertical: 14,
         alignItems: 'center',
         marginTop: 8,
     },
     primaryButtonText: {
-        color: '#ffffff',
+        color: colors.surface,
         fontSize: 16,
         fontWeight: '600',
     },
@@ -60,12 +61,12 @@ export default StyleSheet.create({
         marginBottom: 18,
     },
     linkText: {
-        color: '#374151',
+        color: colors.primaryDark,
         fontSize: 13,
     },
     registerText: {
         textAlign: 'center',
-        color: '#111827',
+        color: colors.text,
         fontSize: 14,
         fontWeight: '500',
     },
