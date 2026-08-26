@@ -7,7 +7,7 @@ export default function Home() {
     return (
         <View style={styles.container}>
             <View style={styles.header}>
-                <Text style={styles.titulo}>Explore novos projetos</Text>
+                <Text style={styles.tituloProj}>Explore novos projetos</Text>
 
                 <TextInput
                     style={styles.input}

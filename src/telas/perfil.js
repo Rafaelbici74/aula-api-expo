@@ -1,11 +1,10 @@
 import { View, Text } from 'react-native';
 import styles from '../stylesGlobal';
 
-export default function Perfil(){
+export default function Configuracoes(){
     return(
         <View style={styles.screen}>
             <View style={styles.content}>
-                <Text style={styles.title}>Perfil</Text>
             </View>
         </View>
     );
