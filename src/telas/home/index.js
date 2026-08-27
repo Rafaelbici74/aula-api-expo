@@ -1,11 +1,23 @@
-import { View, Text, TextInput, Pressable } from 'react-native';
-import { Link, useNavigation } from '@react-navigation/native';
+import { ScrollView, View, Text, TextInput } from 'react-native';
 
 import styles from './styles';
 
+const projetos = [
+    {
+        id: 1,
+        titulo: 'EcoMarket',
+        descricao: 'Marketplace de produtos sustentáveis.',
+        categoria: 'Tecnologia',
+    }
+];
+
 export default function Home() {
     return (
-        <View style={styles.container}>
+        <ScrollView
+            style={styles.container}
+            contentContainerStyle={styles.contentContainer}
+            showsVerticalScrollIndicator={false}
+        >
             <View style={styles.header}>
                 <Text style={styles.tituloProj}>Explore novos projetos</Text>
 
@@ -17,12 +29,24 @@ export default function Home() {
                 />
             </View>
 
+            <View style={styles.projetosSection}>
+                <Text style={styles.titulo}>Projetos em destaque:</Text>
 
-            <View>
-                <Text style={styles.titulo}>Projetos em destaque</Text>
+                <View style={styles.projetosContainer}>
+                    {projetos.map((projeto) => (
+                        <View key={projeto.id} style={styles.projetoCard}>
+                            <View style={styles.projetoCardHeader}>
+                                <Text style={styles.projetoTitulo}>{projeto.titulo}</Text>
+                                <Text style={styles.categoria}>{projeto.categoria}</Text>
+                            </View>
+                            <Text style={styles.projetoDescricao}>{projeto.descricao}</Text>
+                            <Text style={styles.verProjeto}>Ver projeto  ›</Text>
+                        </View>
+                    ))}
+                </View>
             </View>
-        </View>
+        </ScrollView>
 
-    
+
     );
 }
