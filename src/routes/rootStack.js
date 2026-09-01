@@ -1,13 +1,15 @@
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 
-import HomeScreen from '../telas/home';
-import Login from '../telas/login';
-import CadUsuario from '../telas/cadUsuario';
-import RecSenha from '../telas/recSenha';
+import Login from '../telas/auth/login';
+import CadUsuario from '../telas/auth/cadastro';
+import RecSenha from '../telas/auth/recuperarSenha';
+import Projeto from '../telas/app/projeto';
 import MyTabs from './myTabs';
 
+// Cria a navegação em pilha principal do app.
 const Stack = createNativeStackNavigator();
 
+// Define as telas e a ordem inicial de navegação.
 export default function RootStack() {
   return (
     <Stack.Navigator
@@ -59,6 +61,14 @@ export default function RootStack() {
           headerTitleStyle: {
             fontWeight: 'bold',
           },
+        }}
+      />
+      <Stack.Screen
+        name="projeto"
+        component={Projeto}
+        options={{
+          title: 'Detalhes do projeto',
+          headerShown: true,
         }}
       />
     </Stack.Navigator>
