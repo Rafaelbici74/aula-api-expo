@@ -1,12 +1,14 @@
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { Ionicons } from '@expo/vector-icons';
 
-import HomeScreen from '../telas/home';
-import PerfilScreen from '../telas/perfil';
-import ConfiguracoesScreen from '../telas/configuracoes';
+import HomeScreen from '../telas/app/home';
+import PerfilScreen from '../telas/app/perfil';
+import ConfiguracoesScreen from '../telas/app/configuracoes';
 
+// Cria a navegação por abas da aplicação.
 const Tab = createBottomTabNavigator();
 
+// Menu inferior com as telas principais: Home, Perfil e Configurações.
 export default function TabNavigator() {
   return (
     <Tab.Navigator
@@ -21,7 +23,7 @@ export default function TabNavigator() {
         tabBarIcon: ({ focused, color, size }) => {
           let iconName;
 
-          // Define o ícone baseado no nome da rota
+          // Define o ícone baseado na rota atual.
           if (route.name === 'home') {
             iconName = focused ? 'home' : 'home-outline';
           } else if (route.name === 'Perfil') {
@@ -30,10 +32,10 @@ export default function TabNavigator() {
             iconName = focused ? 'list' : 'list-outline';
           }
 
-          // Retorna o componente visual do ícone
+          // Retorna o ícone visual da aba.
           return <Ionicons name={iconName} size={size} color={color} />;
         },
-        // Define as cores personalizadas que você quer usar
+        // Define as cores da aba selecionada e não selecionada.
         tabBarActiveTintColor: '#7f8fe8',   // Cor quando focado (focused)
         tabBarInactiveTintColor: '#5e6381', // Cor quando desfocado
         headerShown: false,
