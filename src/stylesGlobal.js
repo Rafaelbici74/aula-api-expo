@@ -1,5 +1,6 @@
 import { StyleSheet } from 'react-native';
 
+// Tokens visuais compartilhados para manter a identidade das telas consistente.
 export const colors = {
     primary: '#7f8fe8',
     primaryDark: '#172554',
@@ -19,6 +20,7 @@ export const spacing = {
     large: 24,
 };
 
+// Estilos reutilizados por telas simples de conteúdo e autenticação.
 const globalStyles = StyleSheet.create({
     screen: {
         flex: 1,

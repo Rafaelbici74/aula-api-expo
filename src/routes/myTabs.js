@@ -8,6 +8,7 @@ import ConfiguracoesScreen from '../telas/app/configuracoes';
 // Cria a navegação por abas da aplicação.
 const Tab = createBottomTabNavigator();
 
+// Configura o menu persistente usado depois que o usuário entra no aplicativo.
 // Menu inferior com as telas principais: Home, Perfil e Configurações.
 export default function TabNavigator() {
   return (

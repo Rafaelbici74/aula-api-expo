@@ -9,6 +9,7 @@ import MyTabs from './myTabs';
 // Cria a navegação em pilha principal do app.
 const Stack = createNativeStackNavigator();
 
+// Rotas de autenticação ficam na entrada; as demais levam ao conteúdo do app.
 // Define as telas e a ordem inicial de navegação.
 export default function RootStack() {
   return (

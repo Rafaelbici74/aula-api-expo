@@ -1,5 +1,6 @@
 import { StyleSheet } from 'react-native';
 
+// Estilos da apresentação detalhada de um projeto e de seu status.
 export default StyleSheet.create({
   container: {
     flex: 1,

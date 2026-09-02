@@ -3,6 +3,7 @@ import { Link, useNavigation } from '@react-navigation/native';
 
 import styles from './styles';
 
+// Tela inicial: permite entrar e direciona para os fluxos auxiliares de autenticação.
 // Tela de login do app.
 // Centraliza a autenticação inicial e a navegação para cadastro e recuperação de senha.
 export default function Login() {
@@ -36,10 +37,12 @@ export default function Login() {
           <Text style={styles.primaryButtonText}>Entrar</Text>
         </Pressable>
 
+        {/* Link para recuperação da senha esquecida. */}
         <View style={styles.linkRow}>
           <Link screen="recSenha" style={styles.linkText}>Esqueci minha senha</Link>
         </View>
 
+        {/* Link para criação de uma nova conta. */}
         <Pressable onPress={() => navigation.navigate('cadUsuario')}>
           <Text style={styles.registerText}>Não tem conta? Cadastre-se</Text>
         </Pressable>

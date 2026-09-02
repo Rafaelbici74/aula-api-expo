@@ -1,5 +1,6 @@
 import { Platform } from 'react-native';
 
+// Seleciona o endereço local compatível com cada ambiente de execução.
 // Define a URL base da API conforme o ambiente em que o app está rodando.
 // No emulador Android, o host do backend fica em 10.0.2.2, que aponta para o localhost do computador.
 const fallbackUrl = Platform.OS === 'android'

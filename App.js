@@ -3,6 +3,7 @@ import { NavigationContainer } from '@react-navigation/native';
 
 import RootStack from './src/routes/rootStack';
 
+// Componente raiz do aplicativo mobile e ponto de montagem da navegação.
 export default function App() {
   return (
       <NavigationContainer>

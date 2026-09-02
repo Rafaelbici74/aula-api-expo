@@ -20,6 +20,7 @@ const config = {
 // Cria um pool de conexões para reutilizar conexões do banco.
 const connection = mysql.createPool(config);
 
+// Faz uma verificação inicial sem impedir que o servidor seja iniciado.
 // Testa a conexão ao iniciar o servidor para identificar falhas cedo.
 connection
   .getConnection()
