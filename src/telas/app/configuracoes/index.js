@@ -2,6 +2,7 @@ import { View, Text } from 'react-native';
 
 import styles from '../../../stylesGlobal';
 
+// Área destinada às configurações do aplicativo.
 // Tela de configurações do aplicativo.
 export default function Configuracoes() {
   return (

@@ -1,5 +1,6 @@
 import { API_BASE_URL, API_TIMEOUT } from '../config/api';
 
+// Centraliza transporte, timeout e tratamento de respostas da API.
 // Função genérica para centralizar todas as chamadas HTTP da aplicação.
 // Ela trata headers, timeout e resposta JSON/erro de forma padronizada.
 async function request(endpoint, options = {}) {
@@ -44,7 +45,7 @@ async function request(endpoint, options = {}) {
   }
 }
 
-// Objeto que expõe os métodos de comunicação com os endpoints de projetos.
+// Métodos públicos usados pelas telas para consultar e interagir com projetos.
 export const projetosApi = {
   // Busca todos os projetos cadastrados.
   listar: () => request('/api/projetos'),

@@ -4,6 +4,7 @@ import { useState } from 'react';
 
 import styles, { colors } from '../../../stylesGlobal';
 
+// Formulário de criação de conta com validações básicas antes da navegação.
 export default function CadUsuario() {
   const navigation = useNavigation();
   const [name, setName] = useState('');
@@ -80,16 +81,19 @@ export default function CadUsuario() {
           }}
         />
 
+        {/* Exibe a validação quando as senhas informadas são diferentes. */}
         {passwordError ? (
           <Text style={{ color: '#d93025', fontSize: 12, marginBottom: 12, marginTop: -6 }}>
             {passwordError}
           </Text>
         ) : null}
 
+        {/* Envia o cadastro depois que as validações são aprovadas. */}
         <Pressable style={styles.primaryButton} onPress={handleRegister}>
           <Text style={styles.primaryButtonText}>Cadastrar</Text>
         </Pressable>
 
+        {/* Retorna ao login sem empilhar uma nova tela. */}
         <Pressable onPress={() => navigation.goBack()} style={{ marginTop: 12 }}>
           <Text style={{ textAlign: 'center', color: colors.mutedText }}>Já tem conta? Entre</Text>
         </Pressable>

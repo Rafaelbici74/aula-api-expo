@@ -12,6 +12,7 @@ const statusLabelMap = {
   finalizado: 'Finalizado',
 };
 
+// Tela principal: carrega projetos da API e apresenta seus estados de carregamento.
 // Tela principal de projetos exibidos ao usuário.
 export default function Home() {
   const navigation = useNavigation();
@@ -45,6 +46,7 @@ export default function Home() {
       contentContainerStyle={styles.contentContainer}
       showsVerticalScrollIndicator={false}
     >
+      {/* Cabeçalho com título da tela e campo de pesquisa. */}
       <View style={styles.header}>
         <Text style={styles.tituloProj}>Explore novos projetos</Text>
 
@@ -56,20 +58,24 @@ export default function Home() {
         />
       </View>
 
+      {/* Área que alterna entre carregamento, erro, lista vazia e resultados. */}
       <View style={styles.projetosSection}>
         <Text style={styles.titulo}>Projetos disponíveis:</Text>
 
         {carregando ? (
+          /* Indicador exibido enquanto a API responde. */
           <View style={styles.loadingContainer}>
             <ActivityIndicator size="large" color="#7f8fe8" />
             <Text style={styles.loadingText}>Carregando projetos...</Text>
           </View>
         ) : erro ? (
+          /* Mensagem apresentada quando a consulta falha. */
           <View style={styles.emptyState}>
             <Text style={styles.emptyTitle}>Não foi possível carregar</Text>
             <Text style={styles.emptyText}>{erro}</Text>
           </View>
         ) : (
+          /* Lista de cartões ou mensagem para ausência de projetos. */
           <View style={styles.projetosContainer}>
             {projetos.length === 0 ? (
               <View style={styles.emptyState}>

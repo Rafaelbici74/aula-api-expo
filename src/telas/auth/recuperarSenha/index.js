@@ -2,6 +2,7 @@ import { View, Text } from 'react-native';
 
 import styles from '../../../stylesGlobal';
 
+// Tela reservada ao fluxo de recuperação de acesso do usuário.
 // Tela de recuperação de senha.
 export default function RecSenha() {
   return (

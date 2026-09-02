@@ -3,6 +3,7 @@ import { useRoute, useNavigation } from '@react-navigation/native';
 
 import styles from './styles';
 
+// Exibe os dados recebidos da home para consulta detalhada de um projeto.
 // Tela de detalhes do projeto.
 export default function Projeto() {
   const route = useRoute();
@@ -22,6 +23,7 @@ export default function Projeto() {
     <ScrollView style={styles.container} contentContainerStyle={styles.contentContainer}>
       <View style={styles.content}>
 
+        {/* Cartão com título, status, descrição e data de criação. */}
         <View style={styles.card}>
           <Text style={styles.title}>{projeto.titulo || 'Projeto sem nome'}</Text>
 
@@ -33,6 +35,7 @@ export default function Projeto() {
             {projeto.descricao || 'Sem descrição disponível.'}
           </Text>
 
+          {/* A data só aparece quando foi enviada pela API. */}
           {projeto.criado_em ? (
             <Text style={styles.dateText}>
               Criado em: {new Date(projeto.criado_em).toLocaleDateString('pt-BR')}

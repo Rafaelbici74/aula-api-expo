@@ -1,6 +1,7 @@
 import { StyleSheet } from 'react-native';
 import { colors } from '../../../stylesGlobal';
 
+// Estilos da listagem de projetos, estados vazios e feedback de carregamento.
 export default StyleSheet.create({
   container: {
     flex: 1,

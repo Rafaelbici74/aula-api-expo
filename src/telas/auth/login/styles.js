@@ -1,6 +1,7 @@
 import { StyleSheet } from 'react-native';
 import { colors } from '../../../stylesGlobal';
 
+// Estilos exclusivos do formulário de login e seus links de navegação.
 export default StyleSheet.create({
   container: {
     flex: 1,
