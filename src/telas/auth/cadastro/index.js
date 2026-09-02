@@ -90,7 +90,7 @@ export default function CadUsuario() {
           <Text style={styles.primaryButtonText}>Cadastrar</Text>
         </Pressable>
 
-        <Pressable onPress={() => navigation.navigate('login')} style={{ marginTop: 12 }}>
+        <Pressable onPress={() => navigation.goBack()} style={{ marginTop: 12 }}>
           <Text style={{ textAlign: 'center', color: colors.mutedText }}>Já tem conta? Entre</Text>
         </Pressable>
       </View>
