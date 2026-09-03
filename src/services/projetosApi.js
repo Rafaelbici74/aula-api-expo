@@ -49,10 +49,4 @@ async function request(endpoint, options = {}) {
 export const projetosApi = {
   // Busca todos os projetos cadastrados.
   listar: () => request('/api/projetos'),
-
-  // Busca um projeto específico pelo id.
-  buscarPorId: (id) => request(`/api/projetos/${id}`),
-
-  // pedir para entrar em um projeto específico pelo id.
-    entrar: (id) => request(`/api/projetos/${id}/entrar`, { method: 'POST' })
 };
