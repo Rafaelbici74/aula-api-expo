@@ -5,6 +5,7 @@ require('dotenv').config();
 const express = require('express');
 const cors = require('cors');
 const db = require('./src/dataBase/connection');
+const { autenticar } = require('./src/services/authService');
 
 // Cria a aplicação Express.
 const app = express();
@@ -19,6 +20,41 @@ app.use(express.json());
 // Endpoint simples para testar se a API está online.
 app.get('/api/health', async (req, res) => {
   res.json({ ok: true, message: 'API online' });
+});
+
+app.post('/api/login', async (req, res) => {
+  const email = typeof req.body?.email === 'string' ? req.body.email.trim().toLowerCase() : '';
+  const senha = typeof req.body?.senha === 'string' ? req.body.senha : '';
+
+  if (!email || !senha) {
+    return res.status(400).json({
+      sucesso: false,
+      message: 'Informe o e-mail e a senha.',
+    });
+  }
+
+  try {
+    const usuario = await autenticar(email, senha);
+
+    if (!usuario) {
+      return res.status(401).json({
+        sucesso: false,
+        message: 'E-mail ou senha inválidos.',
+      });
+    }
+
+    return res.status(200).json({
+      sucesso: true,
+      message: 'Login realizado com sucesso.',
+      usuario,
+    });
+  } catch (error) {
+    console.error('Erro ao realizar login:', error);
+    return res.status(500).json({
+      sucesso: false,
+      message: 'Não foi possível realizar o login.',
+    });
+  }
 });
 
 // Lista todos os projetos do banco.

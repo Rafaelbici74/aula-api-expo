@@ -1,16 +1,47 @@
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
+import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { Ionicons } from '@expo/vector-icons';
 
 import HomeScreen from '../telas/app/home';
 import PerfilScreen from '../telas/app/perfil';
 import ConfiguracoesScreen from '../telas/app/configuracoes';
+import ProjetoScreen from '../telas/app/projeto';
+import { useTheme } from '../theme/ThemeContext';
 
 // Cria a navegação por abas da aplicação.
 const Tab = createBottomTabNavigator();
+const HomeStack = createNativeStackNavigator();
+
+function HomeStackNavigator() {
+  const { theme } = useTheme();
+
+  return (
+    <HomeStack.Navigator>
+      <HomeStack.Screen
+        name="Home"
+        component={HomeScreen}
+        options={{ headerShown: false }}
+      />
+      <HomeStack.Screen
+        name="Projeto"
+        component={ProjetoScreen}
+        options={{
+          title: 'Detalhes do projeto',
+          headerStyle: {
+            backgroundColor: theme.header,
+          },
+          headerTintColor: theme.text,
+        }}
+      />
+    </HomeStack.Navigator>
+  );
+}
 
 // Configura o menu persistente usado depois que o usuário entra no aplicativo.
 // Menu inferior com as telas principais: Home, Perfil e Configurações.
 export default function TabNavigator() {
+  const { theme } = useTheme();
+
   return (
     <Tab.Navigator
       screenOptions={({ route }) => ({
@@ -37,14 +68,18 @@ export default function TabNavigator() {
           return <Ionicons name={iconName} size={size} color={color} />;
         },
         // Define as cores da aba selecionada e não selecionada.
-        tabBarActiveTintColor: '#7f8fe8',   // Cor quando focado (focused)
-        tabBarInactiveTintColor: '#5e6381', // Cor quando desfocado
+        tabBarActiveTintColor: theme.primary,
+        tabBarInactiveTintColor: theme.mutedText,
+        tabBarStyle: {
+          backgroundColor: theme.surface,
+          borderTopColor: theme.border,
+        },
         headerShown: false,
       })}      
     >
       <Tab.Screen
         name="home"
-        component={HomeScreen}
+        component={HomeStackNavigator}
         // options={{  }} 
         options={{ title: 'Home' }}
       />

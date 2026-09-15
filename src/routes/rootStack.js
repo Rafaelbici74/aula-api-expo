@@ -3,8 +3,8 @@ import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import Login from '../telas/auth/login';
 import CadUsuario from '../telas/auth/cadastro';
 import RecSenha from '../telas/auth/recuperarSenha';
-import Projeto from '../telas/app/projeto';
 import MyTabs from './myTabs';
+import { useTheme } from '../theme/ThemeContext';
 
 // Cria a navegação em pilha principal do app.
 const Stack = createNativeStackNavigator();
@@ -12,14 +12,17 @@ const Stack = createNativeStackNavigator();
 // Rotas de autenticação ficam na entrada; as demais levam ao conteúdo do app.
 // Define as telas e a ordem inicial de navegação.
 export default function RootStack() {
+  const { theme } = useTheme();
+
   return (
     <Stack.Navigator
       initialRouteName="login"
       screenOptions={
         {
           headerStyle: {
-            backgroundColor: '#7f8fe8'
+            backgroundColor: theme.header,
           },
+          headerTintColor: theme.text,
         }
       }
     >
@@ -29,8 +32,9 @@ export default function RootStack() {
         options={{
           title: 'Login',
           headerStyle: {
-            backgroundColor: '#7f8fe8',
+            backgroundColor: theme.header,
           },
+          headerTintColor: theme.text,
           textAlign: 'center',
         }}
       />
@@ -56,20 +60,12 @@ export default function RootStack() {
         options={{
           title: 'My home',
           headerStyle: {
-            backgroundColor: '#7f8fe8',
+            backgroundColor: theme.header,
           },
           headerTintColor: '#000',
           headerTitleStyle: {
             fontWeight: 'bold',
           },
-        }}
-      />
-      <Stack.Screen
-        name="projeto"
-        component={Projeto}
-        options={{
-          title: 'Detalhes do projeto',
-          headerShown: true,
         }}
       />
     </Stack.Navigator>
