@@ -85,6 +85,66 @@ const globalStyles = StyleSheet.create({
         fontSize: 16,
         fontWeight: '600',
     },
+    logoutButton: {
+        backgroundColor: '#c62828',
+        borderRadius: 7,
+        paddingVertical: 14,
+        paddingHorizontal: 28,
+        alignItems: 'center',
+        marginTop: 24,
+    },
+    logoutButtonPressed: {
+        opacity: 0.75,
+    },
+    logoutButtonText: {
+        color: colors.surface,
+        fontSize: 16,
+        fontWeight: '600',
+    },
+    appearanceCard: {
+        borderWidth: 1,
+        borderRadius: 12,
+        padding: spacing.medium,
+        marginBottom: spacing.medium,
+    },
+    appearanceTitle: {
+        fontSize: 18,
+        fontWeight: '700',
+        marginBottom: spacing.small,
+    },
+    appearanceDescription: {
+        fontSize: 14,
+        marginBottom: spacing.medium,
+    },
+    appearanceOptions: {
+        gap: spacing.small,
+    },
+    appearanceOption: {
+        minHeight: 48,
+        borderWidth: 1,
+        borderRadius: 8,
+        paddingHorizontal: spacing.medium,
+        flexDirection: 'row',
+        alignItems: 'center',
+    },
+    appearanceIndicator: {
+        width: 20,
+        height: 20,
+        borderWidth: 2,
+        borderRadius: 10,
+        alignItems: 'center',
+        justifyContent: 'center',
+        marginRight: spacing.small,
+    },
+    appearanceIndicatorSelected: {
+        width: 10,
+        height: 10,
+        borderRadius: 5,
+    },
+    appearanceOptionText: {
+        fontSize: 15,
+        fontWeight: '600',
+    },
 });
 
 export default globalStyles;

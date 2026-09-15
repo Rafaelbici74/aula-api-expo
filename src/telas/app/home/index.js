@@ -3,6 +3,8 @@ import { ScrollView, View, Text, TextInput, ActivityIndicator, Pressable } from 
 import { useNavigation } from '@react-navigation/native';
 
 import { projetosApi } from '../../../services/projetosApi';
+import { useTheme } from '../../../theme/ThemeContext';
+import AppHeader from '../../../components/AppHeader';
 import styles from './styles';
 
 // Mapeia os status vindos da API para textos amigáveis na interface.
@@ -16,6 +18,7 @@ const statusLabelMap = {
 // Tela principal de projetos exibidos ao usuário.
 export default function Home() {
   const navigation = useNavigation();
+  const { theme } = useTheme();
   const [projetos, setProjetos] = useState([]);
   const [carregando, setCarregando] = useState(true);
   const [erro, setErro] = useState('');
@@ -42,45 +45,47 @@ export default function Home() {
 
   return (
     <ScrollView
-      style={styles.container}
+      style={[styles.container, { backgroundColor: theme.background }]}
       contentContainerStyle={styles.contentContainer}
       showsVerticalScrollIndicator={false}
     >
       {/* Cabeçalho com título da tela e campo de pesquisa. */}
-      <View style={styles.header}>
-        <Text style={styles.tituloProj}>Explore novos projetos</Text>
-
+      <AppHeader title="Explore novos projetos">
         <TextInput
-          style={styles.input}
+          style={[styles.headerInput, {
+            backgroundColor: theme.surface,
+            borderColor: theme.border,
+            color: theme.text,
+          }]}
           placeholder="Procure por um projeto"
-          placeholderTextColor="#94a3b8"
+          placeholderTextColor={theme.placeholder}
           returnKeyType="search"
         />
-      </View>
+      </AppHeader>
 
       {/* Área que alterna entre carregamento, erro, lista vazia e resultados. */}
       <View style={styles.projetosSection}>
-        <Text style={styles.titulo}>Projetos disponíveis:</Text>
+        <Text style={[styles.titulo, { color: theme.primaryDark }]}>Projetos disponíveis:</Text>
 
         {carregando ? (
           /* Indicador exibido enquanto a API responde. */
           <View style={styles.loadingContainer}>
-            <ActivityIndicator size="large" color="#7f8fe8" />
-            <Text style={styles.loadingText}>Carregando projetos...</Text>
+            <ActivityIndicator size="large" color={theme.primary} />
+              <Text style={[styles.loadingText, { color: theme.mutedText }]}>Carregando projetos...</Text>
           </View>
         ) : erro ? (
           /* Mensagem apresentada quando a consulta falha. */
-          <View style={styles.emptyState}>
-            <Text style={styles.emptyTitle}>Não foi possível carregar</Text>
-            <Text style={styles.emptyText}>{erro}</Text>
+          <View style={[styles.emptyState, { backgroundColor: theme.surface, borderColor: theme.border }]}>
+            <Text style={[styles.emptyTitle, { color: theme.primaryDark }]}>Não foi possível carregar</Text>
+            <Text style={[styles.emptyText, { color: theme.mutedText }]}>{erro}</Text>
           </View>
         ) : (
           /* Lista de cartões ou mensagem para ausência de projetos. */
           <View style={styles.projetosContainer}>
             {projetos.length === 0 ? (
-              <View style={styles.emptyState}>
-                <Text style={styles.emptyTitle}>Nenhum projeto encontrado</Text>
-                <Text style={styles.emptyText}>Ainda não há projetos cadastrados.</Text>
+              <View style={[styles.emptyState, { backgroundColor: theme.surface, borderColor: theme.border }]}>
+                <Text style={[styles.emptyTitle, { color: theme.primaryDark }]}>Nenhum projeto encontrado</Text>
+                <Text style={[styles.emptyText, { color: theme.mutedText }]}>Ainda não há projetos cadastrados.</Text>
               </View>
             ) : (
               projetos.map((projeto) => {
@@ -96,14 +101,14 @@ export default function Home() {
                 return (
                   <Pressable
                     key={String(projeto.id)}
-                    style={styles.projetoCard}
-                    onPress={() => navigation.navigate('projeto', { projeto })}
+                    style={[styles.projetoCard, { backgroundColor: theme.surface, borderColor: theme.border }]}
+                    onPress={() => navigation.navigate('Projeto', { projeto })}
                   >
-                    <Text style={styles.projetoTitulo}>{projeto.titulo || 'Projeto sem nome'}</Text>
+                    <Text style={[styles.projetoTitulo, { color: theme.primaryDark }]}>{projeto.titulo || 'Projeto sem nome'}</Text>
                     <View style={[styles.projetoStatusContainer, statusStyle]}>
                       <Text style={styles.projetoStatus}>{statusText}</Text>
                     </View>
-                    <Text style={styles.projetoDescricao}>{projeto.descricao || 'Sem descrição disponível.'}</Text>
+                    <Text style={[styles.projetoDescricao, { color: theme.mutedText }]}>{projeto.descricao || 'Sem descrição disponível.'}</Text>
                   </Pressable>
                 );
               })

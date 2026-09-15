@@ -56,6 +56,14 @@ export default StyleSheet.create({
     fontSize: 16,
     fontWeight: '600',
   },
+  primaryButtonDisabled: {
+    opacity: 0.7,
+  },
+  errorText: {
+    color: '#c62828',
+    fontSize: 13,
+    marginBottom: 4,
+  },
   linkRow: {
     alignItems: 'flex-end',
     marginTop: 12,

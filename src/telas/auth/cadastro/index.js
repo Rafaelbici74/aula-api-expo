@@ -2,11 +2,13 @@ import { View, Text, TextInput, Pressable, Alert } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { useState } from 'react';
 
-import styles, { colors } from '../../../stylesGlobal';
+import styles from '../../../stylesGlobal';
+import { useTheme } from '../../../theme/ThemeContext';
 
 // Formulário de criação de conta com validações básicas antes da navegação.
 export default function CadUsuario() {
   const navigation = useNavigation();
+  const { theme } = useTheme();
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -35,22 +37,22 @@ export default function CadUsuario() {
   }
 
   return (
-    <View style={styles.centeredScreen}>
-      <View style={styles.card}>
-        <Text style={styles.title}>Faça seu cadastro</Text>
+    <View style={[styles.centeredScreen, { backgroundColor: theme.background }]}>
+      <View style={[styles.card, { backgroundColor: theme.surface }]}>
+        <Text style={[styles.title, { color: theme.primaryDark }]}>Faça seu cadastro</Text>
 
         <TextInput
-          style={styles.input}
+          style={[styles.input, { backgroundColor: theme.inputBackground, borderColor: theme.border, color: theme.text }]}
           placeholder="Nome"
-          placeholderTextColor={colors.placeholder}
+          placeholderTextColor={theme.placeholder}
           value={name}
           onChangeText={setName}
         />
 
         <TextInput
-          style={styles.input}
+          style={[styles.input, { backgroundColor: theme.inputBackground, borderColor: theme.border, color: theme.text }]}
           placeholder="E-mail"
-          placeholderTextColor={colors.placeholder}
+          placeholderTextColor={theme.placeholder}
           autoCapitalize="none"
           keyboardType="email-address"
           value={email}
@@ -58,9 +60,9 @@ export default function CadUsuario() {
         />
 
         <TextInput
-          style={styles.input}
+          style={[styles.input, { backgroundColor: theme.inputBackground, borderColor: theme.border, color: theme.text }]}
           placeholder="Senha"
-          placeholderTextColor={colors.placeholder}
+          placeholderTextColor={theme.placeholder}
           secureTextEntry
           value={password}
           onChangeText={(text) => {
@@ -70,9 +72,9 @@ export default function CadUsuario() {
         />
 
         <TextInput
-          style={styles.input}
+          style={[styles.input, { backgroundColor: theme.inputBackground, borderColor: theme.border, color: theme.text }]}
           placeholder="Confirme a senha"
-          placeholderTextColor={colors.placeholder}
+          placeholderTextColor={theme.placeholder}
           secureTextEntry
           value={confirmPassword}
           onChangeText={(text) => {
@@ -83,19 +85,19 @@ export default function CadUsuario() {
 
         {/* Exibe a validação quando as senhas informadas são diferentes. */}
         {passwordError ? (
-          <Text style={{ color: '#d93025', fontSize: 12, marginBottom: 12, marginTop: -6 }}>
+          <Text style={{ color: theme.error, fontSize: 12, marginBottom: 12, marginTop: -6 }}>
             {passwordError}
           </Text>
         ) : null}
 
         {/* Envia o cadastro depois que as validações são aprovadas. */}
-        <Pressable style={styles.primaryButton} onPress={handleRegister}>
+        <Pressable style={[styles.primaryButton, { backgroundColor: theme.primary }]} onPress={handleRegister}>
           <Text style={styles.primaryButtonText}>Cadastrar</Text>
         </Pressable>
 
         {/* Retorna ao login sem empilhar uma nova tela. */}
         <Pressable onPress={() => navigation.goBack()} style={{ marginTop: 12 }}>
-          <Text style={{ textAlign: 'center', color: colors.mutedText }}>Já tem conta? Entre</Text>
+          <Text style={{ textAlign: 'center', color: theme.mutedText }}>Já tem conta? Entre</Text>
         </Pressable>
       </View>
     </View>
