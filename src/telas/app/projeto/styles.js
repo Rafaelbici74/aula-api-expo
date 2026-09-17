@@ -60,9 +60,78 @@ export default StyleSheet.create({
     fontSize: 16,
     lineHeight: 24,
   },
+  membersText: {
+    fontSize: 14,
+    fontWeight: '600',
+    marginTop: 16,
+  },
   dateText: {
     marginTop: 20,
     color: '#6b7280',
     fontSize: 14,
+  },
+  joinButton: {
+    alignItems: 'center',
+    borderRadius: 8,
+    marginTop: 24,
+    padding: 14,
+  },
+  joinButtonText: {
+    color: '#fff',
+    fontWeight: '700',
+  },
+  joinHint: {
+    fontSize: 13,
+    marginTop: 8,
+    textAlign: 'center',
+  },
+  modalBackdrop: {
+    flex: 1,
+    justifyContent: 'center',
+    padding: 24,
+    backgroundColor: 'rgba(0, 0, 0, 0.55)',
+  },
+  applicationModal: {
+    borderRadius: 14,
+    maxHeight: '85%',
+    padding: 20,
+  },
+  modalTitle: {
+    fontSize: 20,
+    fontWeight: '700',
+    marginBottom: 14,
+  },
+  vacancyOption: {
+    borderWidth: 1,
+    borderRadius: 8,
+    marginBottom: 8,
+    padding: 12,
+  },
+  vacancyTitle: {
+    fontWeight: '700',
+  },
+  vacancyDescription: {
+    fontSize: 13,
+    marginTop: 5,
+  },
+  messageInput: {
+    borderWidth: 1,
+    borderRadius: 8,
+    minHeight: 80,
+    marginTop: 8,
+    padding: 12,
+    textAlignVertical: 'top',
+  },
+  modalActions: {
+    flexDirection: 'row',
+    justifyContent: 'flex-end',
+    gap: 24,
+    marginTop: 18,
+  },
+  cancelText: {
+    fontWeight: '600',
+  },
+  saveText: {
+    fontWeight: '700',
   },
 });

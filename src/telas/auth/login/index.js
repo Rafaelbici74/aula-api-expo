@@ -4,6 +4,7 @@ import { Link, useNavigation } from '@react-navigation/native';
 
 import { login } from '../../../services/authApi';
 import { useTheme } from '../../../theme/ThemeContext';
+import { useAuth } from '../../../context/AuthContext';
 import styles from './styles';
 
 // Tela inicial: permite entrar e direciona para os fluxos auxiliares de autenticação.
@@ -12,6 +13,7 @@ import styles from './styles';
 export default function Login() {
   const navigation = useNavigation();
   const { theme } = useTheme();
+  const { setUser } = useAuth();
   const [email, setEmail] = useState('');
   const [senha, setSenha] = useState('');
   const [erro, setErro] = useState('');
@@ -26,7 +28,8 @@ export default function Login() {
     try {
       setCarregando(true);
       setErro('');
-      await login(email, senha);
+      const resposta = await login(email, senha);
+      setUser(resposta.usuario);
       navigation.replace('myTab');
     } catch (error) {
       setErro(error.message || 'Não foi possível realizar o login.');

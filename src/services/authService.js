@@ -16,7 +16,7 @@ async function senhaValida(senhaInformada, senhaArmazenada) {
 
 async function autenticar(email, senha) {
   const [rows] = await db.query(
-    'SELECT email, senha FROM usuarios WHERE email = ? LIMIT 1',
+    'SELECT id, nome AS nome, email, senha, bio, localizacao FROM usuarios WHERE email = ? LIMIT 1',
     [email],
   );
 
@@ -25,7 +25,13 @@ async function autenticar(email, senha) {
     return null;
   }
 
-  return { email: usuario.email };
+  return {
+    id: usuario.id,
+    nome: usuario.nome,
+    email: usuario.email,
+    bio: usuario.bio || '',
+    localizacao: usuario.localizacao || '',
+  };
 }
 
 module.exports = { autenticar };

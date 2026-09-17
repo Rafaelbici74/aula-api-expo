@@ -49,4 +49,10 @@ async function request(endpoint, options = {}) {
 export const projetosApi = {
   // Busca todos os projetos cadastrados.
   listar: () => request('/api/projetos'),
+  listarVagas: (projetoId) => request(`/api/projetos/${projetoId}/vagas`),
+  consultarCandidatura: (projetoId, usuarioId) => request(`/api/projetos/${projetoId}/candidatura/${usuarioId}`),
+  enviarCandidatura: (candidatura) => request('/api/candidaturas', {
+    method: 'POST',
+    body: JSON.stringify(candidatura),
+  }),
 };

@@ -9,6 +9,7 @@ export default StyleSheet.create({
   },
   contentContainer: {
     alignItems: 'center',
+    paddingHorizontal: 24,
     paddingBottom: 28,
   },
   titulo: {
@@ -36,10 +37,69 @@ export default StyleSheet.create({
     shadowRadius: 10,
     elevation: 3,
   },
+  filterButton: {
+    minWidth: 96,
+    alignItems: 'center',
+    borderRadius: 12,
+    paddingHorizontal: 16,
+    paddingVertical: 11,
+    shadowColor: colors.primaryDark,
+    shadowOffset: { width: 0, height: 3 },
+    shadowOpacity: 0.18,
+    shadowRadius: 6,
+    elevation: 3,
+  },
+  filterRow: {
+    width: '100%',
+    alignSelf: 'stretch',
+    alignItems: 'flex-end',
+    marginTop: 14,
+    marginBottom: 4,
+  },
+  filterButtonText: {
+    color: '#fff',
+    fontSize: 14,
+    fontWeight: '700',
+  },
+  modalBackdrop: {
+    flex: 1,
+    justifyContent: 'center',
+    padding: 24,
+    backgroundColor: 'rgba(0, 0, 0, 0.55)',
+  },
+  filterModal: {
+    borderRadius: 14,
+    padding: 20,
+  },
+  filterTitle: {
+    fontSize: 20,
+    fontWeight: '700',
+    marginBottom: 14,
+  },
+  filterOption: {
+    borderWidth: 1,
+    borderRadius: 8,
+    marginBottom: 8,
+    padding: 12,
+  },
+  filterOptionText: {
+    fontWeight: '600',
+  },
+  filterActions: {
+    flexDirection: 'row',
+    justifyContent: 'flex-end',
+    gap: 24,
+    marginTop: 12,
+  },
+  filterCancel: {
+    fontWeight: '600',
+  },
+  filterApply: {
+    fontWeight: '700',
+  },
   projetosSection: {
     width: '100%',
     maxWidth: 360,
-    paddingHorizontal: 24,
   },
   projetosContainer: {
     width: '100%',
@@ -69,6 +129,11 @@ export default StyleSheet.create({
     fontSize: 14,
     lineHeight: 20,
     marginTop: 10,
+  },
+  projetoMembros: {
+    fontSize: 13,
+    fontWeight: '600',
+    marginTop: 12,
   },
   projetoStatusContainer: {
     marginTop: 12,

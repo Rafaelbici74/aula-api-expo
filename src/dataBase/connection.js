@@ -12,6 +12,7 @@ const config = {
   user: process.env.BD_USUARIO || process.env.DB_USER || 'root',
   password: process.env.BD_SENHA || process.env.DB_PASSWORD || '',
   database: process.env.BD_BANCO || process.env.DB_NAME || 'aula_api_expo',
+  charset: 'utf8mb4',
   waitForConnections: true,
   connectionLimit: 10,
   queueLimit: 0,
