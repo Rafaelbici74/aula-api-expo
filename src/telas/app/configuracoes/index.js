@@ -4,12 +4,14 @@ import { Alert, Pressable, Text, View } from 'react-native';
 import styles from '../../../stylesGlobal';
 import AppHeader from '../../../components/AppHeader';
 import { useTheme } from '../../../theme/ThemeContext';
+import { useAuth } from '../../../context/AuthContext';
 
 // Área destinada às configurações do aplicativo.
 // Tela de configurações do aplicativo.
 export default function Configuracoes() {
   const navigation = useNavigation();
   const { mode, setMode, theme } = useTheme();
+  const { setUser } = useAuth();
 
   function handleLogout() {
     Alert.alert(
@@ -24,6 +26,7 @@ export default function Configuracoes() {
           text: 'Sair',
           style: 'destructive',
           onPress: () => {
+            setUser(null);
             const rootNavigation = navigation.getParent();
 
             if (!rootNavigation) {

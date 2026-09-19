@@ -7,12 +7,15 @@ import {
 
 import RootStack from './src/routes/rootStack';
 import { ThemeProvider, useTheme } from './src/theme/ThemeContext';
+import { AuthProvider } from './src/context/AuthContext';
 
 // Componente raiz do aplicativo mobile e ponto de montagem da navegação.
 export default function App() {
   return (
     <ThemeProvider>
-      <ThemedApp />
+      <AuthProvider>
+        <ThemedApp />
+      </AuthProvider>
     </ThemeProvider>
   );
 }

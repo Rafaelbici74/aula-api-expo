@@ -49,4 +49,42 @@ async function request(endpoint, options = {}) {
 export const projetosApi = {
   // Busca todos os projetos cadastrados.
   listar: () => request('/api/projetos'),
+  listarDoUsuario: (usuarioId) => request(`/api/usuarios/${usuarioId}/projetos`),
+  listarTarefas: (projetoId, usuarioId) => request(`/api/projetos/${projetoId}/tarefas?usuario_id=${usuarioId}`),
+  moverTarefa: (tarefaId, usuarioId, status) => request(`/api/tarefas/${tarefaId}/status`, {
+    method: 'PATCH',
+    body: JSON.stringify({ usuario_id: usuarioId, status }),
+  }),
+  assumirTarefa: (tarefaId, usuarioId) => request(`/api/tarefas/${tarefaId}/assumir`, {
+    method: 'PATCH',
+    body: JSON.stringify({ usuario_id: usuarioId }),
+  }),
+  delegarTarefa: (tarefaId, usuarioId, novoResponsavelId) => request(`/api/tarefas/${tarefaId}/delegar`, {
+    method: 'PATCH',
+    body: JSON.stringify({ usuario_id: usuarioId, novo_responsavel_id: novoResponsavelId }),
+  }),
+  buscarDetalhes: (projetoId) => request(`/api/projetos/${projetoId}/detalhes`),
+  listarVagas: (projetoId) => request(`/api/projetos/${projetoId}/vagas`),
+  consultarCandidatura: (projetoId, usuarioId) => request(`/api/projetos/${projetoId}/candidatura/${usuarioId}`),
+  listarCandidaturas: (projetoId, usuarioId) => request(`/api/projetos/${projetoId}/candidaturas?usuario_id=${usuarioId}`),
+  aceitarCandidatura: (candidaturaId, usuarioId) => request(`/api/candidaturas/${candidaturaId}/aceitar`, {
+    method: 'PATCH',
+    body: JSON.stringify({ usuario_id: usuarioId }),
+  }),
+  rejeitarCandidatura: (candidaturaId, usuarioId) => request(`/api/candidaturas/${candidaturaId}/rejeitar`, {
+    method: 'PATCH',
+    body: JSON.stringify({ usuario_id: usuarioId }),
+  }),
+  confirmarEntrada: (candidaturaId, usuarioId) => request(`/api/candidaturas/${candidaturaId}/confirmar-entrada`, {
+    method: 'PATCH',
+    body: JSON.stringify({ usuario_id: usuarioId }),
+  }),
+  recusarEntrada: (candidaturaId, usuarioId) => request(`/api/candidaturas/${candidaturaId}/recusar-entrada`, {
+    method: 'PATCH',
+    body: JSON.stringify({ usuario_id: usuarioId }),
+  }),
+  enviarCandidatura: (candidatura) => request('/api/candidaturas', {
+    method: 'POST',
+    body: JSON.stringify(candidatura),
+  }),
 };

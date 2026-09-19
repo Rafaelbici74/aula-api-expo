@@ -1,10 +1,11 @@
-import { useEffect, useState } from 'react';
-import { ScrollView, View, Text, TextInput, ActivityIndicator, Pressable } from 'react-native';
+import { useEffect, useMemo, useState } from 'react';
+import { Modal, ScrollView, View, Text, TextInput, ActivityIndicator, Pressable } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 
 import { projetosApi } from '../../../services/projetosApi';
 import { useTheme } from '../../../theme/ThemeContext';
 import AppHeader from '../../../components/AppHeader';
+import NotificationsButton from '../../../components/NotificationsButton';
 import styles from './styles';
 
 // Mapeia os status vindos da API para textos amigáveis na interface.
@@ -22,6 +23,20 @@ export default function Home() {
   const [projetos, setProjetos] = useState([]);
   const [carregando, setCarregando] = useState(true);
   const [erro, setErro] = useState('');
+  const [search, setSearch] = useState('');
+  const [filter, setFilter] = useState('todos');
+  const [draftFilter, setDraftFilter] = useState('todos');
+  const [filterVisible, setFilterVisible] = useState(false);
+
+  const projetosFiltrados = useMemo(() => projetos.filter((projeto) => {
+    const status = String(projeto.status || '').toLowerCase();
+    const termo = search.trim().toLowerCase();
+    const correspondeStatus = filter === 'todos' || status === filter;
+    const correspondeBusca = !termo
+      || String(projeto.titulo || '').toLowerCase().includes(termo)
+      || String(projeto.descricao || '').toLowerCase().includes(termo);
+    return correspondeStatus && correspondeBusca;
+  }), [filter, projetos, search]);
 
   useEffect(() => {
     async function carregarProjetos() {
@@ -44,11 +59,13 @@ export default function Home() {
   }, []);
 
   return (
-    <ScrollView
-      style={[styles.container, { backgroundColor: theme.background }]}
-      contentContainerStyle={styles.contentContainer}
-      showsVerticalScrollIndicator={false}
-    >
+    <View style={[styles.screen, { backgroundColor: theme.background }]}>
+      <NotificationsButton />
+      <ScrollView
+        style={[styles.container, { backgroundColor: theme.background }]}
+        contentContainerStyle={styles.contentContainer}
+        showsVerticalScrollIndicator={false}
+      >
       {/* Cabeçalho com título da tela e campo de pesquisa. */}
       <AppHeader title="Explore novos projetos">
         <TextInput
@@ -60,8 +77,22 @@ export default function Home() {
           placeholder="Procure por um projeto"
           placeholderTextColor={theme.placeholder}
           returnKeyType="search"
+          value={search}
+          onChangeText={setSearch}
         />
       </AppHeader>
+
+      <View style={styles.filterRow}>
+        <Pressable
+          style={[styles.filterButton, { backgroundColor: theme.primary }]}
+          onPress={() => {
+            setDraftFilter(filter);
+            setFilterVisible(true);
+          }}
+        >
+          <Text style={styles.filterButtonText}>Filtros{filter !== 'todos' ? `: ${statusLabelMap[filter]}` : ''}</Text>
+        </Pressable>
+      </View>
 
       {/* Área que alterna entre carregamento, erro, lista vazia e resultados. */}
       <View style={styles.projetosSection}>
@@ -82,15 +113,20 @@ export default function Home() {
         ) : (
           /* Lista de cartões ou mensagem para ausência de projetos. */
           <View style={styles.projetosContainer}>
-            {projetos.length === 0 ? (
+            {projetosFiltrados.length === 0 ? (
               <View style={[styles.emptyState, { backgroundColor: theme.surface, borderColor: theme.border }]}>
                 <Text style={[styles.emptyTitle, { color: theme.primaryDark }]}>Nenhum projeto encontrado</Text>
-                <Text style={[styles.emptyText, { color: theme.mutedText }]}>Ainda não há projetos cadastrados.</Text>
+                <Text style={[styles.emptyText, { color: theme.mutedText }]}>
+                  {projetos.length === 0 ? 'Ainda não há projetos cadastrados.' : 'Nenhum projeto corresponde aos filtros.'}
+                </Text>
               </View>
             ) : (
-              projetos.map((projeto) => {
+              projetosFiltrados.map((projeto) => {
                 const statusKey = String(projeto.status || 'aberto').toLowerCase();
                 const statusText = statusLabelMap[statusKey] || statusKey || 'Status desconhecido';
+                const membrosAtuais = Math.max(0, Number(projeto.membros_atuais || 0));
+                const limiteMembros = Math.max(0, Number(projeto.limite_membros || 0));
+                const membrosFormatados = `${String(membrosAtuais).padStart(2, '0')}/${String(limiteMembros).padStart(2, '0')}`;
                 const statusStyle =
                   statusKey === 'finalizado'
                     ? styles.projetoStatusFinalizado
@@ -109,6 +145,14 @@ export default function Home() {
                       <Text style={styles.projetoStatus}>{statusText}</Text>
                     </View>
                     <Text style={[styles.projetoDescricao, { color: theme.mutedText }]}>{projeto.descricao || 'Sem descrição disponível.'}</Text>
+                    <Text style={[styles.projetoMembros, { color: theme.mutedText }]}>
+                      Membros: {membrosFormatados}
+                    </Text>
+                    {!projeto.aceita_candidaturas ? (
+                      <Text style={[styles.projetoCandidaturasIndisponiveis, { color: theme.error }]}>
+                        {projeto.motivo_candidatura_indisponivel || 'Candidaturas encerradas'}
+                      </Text>
+                    ) : null}
                   </Pressable>
                 );
               })
@@ -116,6 +160,37 @@ export default function Home() {
           </View>
         )}
       </View>
-    </ScrollView>
+      <Modal visible={filterVisible} transparent animationType="fade" onRequestClose={() => setFilterVisible(false)}>
+        <View style={styles.modalBackdrop}>
+          <View style={[styles.filterModal, { backgroundColor: theme.surface }]}>
+            <Text style={[styles.filterTitle, { color: theme.text }]}>Filtrar projetos</Text>
+            {['todos', 'aberto', 'em_andamento', 'finalizado'].map((option) => (
+              <Pressable
+                key={option}
+                style={[
+                  styles.filterOption,
+                  { borderColor: theme.border },
+                  draftFilter === option && { backgroundColor: theme.primary },
+                ]}
+                onPress={() => setDraftFilter(option)}
+              >
+                <Text style={[styles.filterOptionText, { color: draftFilter === option ? '#fff' : theme.text }]}>
+                  {option === 'todos' ? 'Todos' : statusLabelMap[option]}
+                </Text>
+              </Pressable>
+            ))}
+            <View style={styles.filterActions}>
+              <Pressable onPress={() => setFilterVisible(false)}>
+                <Text style={[styles.filterCancel, { color: theme.mutedText }]}>Cancelar</Text>
+              </Pressable>
+              <Pressable onPress={() => { setFilter(draftFilter); setFilterVisible(false); }}>
+                <Text style={[styles.filterApply, { color: theme.primary }]}>Aplicar</Text>
+              </Pressable>
+            </View>
+          </View>
+        </View>
+      </Modal>
+      </ScrollView>
+    </View>
   );
 }

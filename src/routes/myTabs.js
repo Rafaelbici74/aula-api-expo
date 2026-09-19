@@ -6,11 +6,15 @@ import HomeScreen from '../telas/app/home';
 import PerfilScreen from '../telas/app/perfil';
 import ConfiguracoesScreen from '../telas/app/configuracoes';
 import ProjetoScreen from '../telas/app/projeto';
+import MeusProjetosScreen from '../telas/app/meusProjetos';
+import TarefasScreen from '../telas/app/tarefas';
 import { useTheme } from '../theme/ThemeContext';
+import AnimatedTabBar from '../components/AnimatedTabBar';
 
 // Cria a navegação por abas da aplicação.
 const Tab = createBottomTabNavigator();
 const HomeStack = createNativeStackNavigator();
+const ProjectsStack = createNativeStackNavigator();
 
 function HomeStackNavigator() {
   const { theme } = useTheme();
@@ -37,6 +41,29 @@ function HomeStackNavigator() {
   );
 }
 
+function ProjectsStackNavigator() {
+  const { theme } = useTheme();
+
+  return (
+    <ProjectsStack.Navigator>
+      <ProjectsStack.Screen
+        name="MeusProjetos"
+        component={MeusProjetosScreen}
+        options={{ headerShown: false }}
+      />
+      <ProjectsStack.Screen
+        name="Tarefas"
+        component={TarefasScreen}
+        options={{
+          title: 'Tarefas do projeto',
+          headerStyle: { backgroundColor: theme.header },
+          headerTintColor: theme.text,
+        }}
+      />
+    </ProjectsStack.Navigator>
+  );
+}
+
 // Configura o menu persistente usado depois que o usuário entra no aplicativo.
 // Menu inferior com as telas principais: Home, Perfil e Configurações.
 export default function TabNavigator() {
@@ -44,38 +71,8 @@ export default function TabNavigator() {
 
   return (
     <Tab.Navigator
-      screenOptions={({ route }) => ({
-        // tabBarShowLabel: false, // Oculta o texto de todas as abas
-        // tabBarLabelPosition: 'beside-icon' 
-        tabBarLabelStyle: {
-          fontSize: 16,
-          fontFamily: 'Georgia',
-          fontWeight: 300,
-        },
-        tabBarIcon: ({ focused, color, size }) => {
-          let iconName;
-
-          // Define o ícone baseado na rota atual.
-          if (route.name === 'home') {
-            iconName = focused ? 'home' : 'home-outline';
-          } else if (route.name === 'Perfil') {
-            iconName = focused ? 'person' : 'person-outline';
-          } else if (route.name === 'Configurações') {
-            iconName = focused ? 'list' : 'list-outline';
-          }
-
-          // Retorna o ícone visual da aba.
-          return <Ionicons name={iconName} size={size} color={color} />;
-        },
-        // Define as cores da aba selecionada e não selecionada.
-        tabBarActiveTintColor: theme.primary,
-        tabBarInactiveTintColor: theme.mutedText,
-        tabBarStyle: {
-          backgroundColor: theme.surface,
-          borderTopColor: theme.border,
-        },
-        headerShown: false,
-      })}      
+      tabBar={(props) => <AnimatedTabBar {...props} />}
+      screenOptions={{ headerShown: false }}
     >
       <Tab.Screen
         name="home"
@@ -83,6 +80,7 @@ export default function TabNavigator() {
         // options={{  }} 
         options={{ title: 'Home' }}
       />
+      <Tab.Screen name="Meus Projetos" component={ProjectsStackNavigator} options={{ title: 'Meus projetos' }} />
       <Tab.Screen name="Perfil" component={PerfilScreen} />
       <Tab.Screen name="Configurações" component={ConfiguracoesScreen} />
     </Tab.Navigator>
