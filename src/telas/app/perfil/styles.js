@@ -49,6 +49,11 @@ export default StyleSheet.create({
     fontSize: 14,
     lineHeight: 21,
   },
+  ratingValue: {
+    fontSize: 22,
+    fontWeight: '700',
+    marginBottom: 2,
+  },
   secondaryButton: {
     alignSelf: 'flex-start',
     borderWidth: 1,

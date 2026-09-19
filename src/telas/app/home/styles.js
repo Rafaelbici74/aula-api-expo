@@ -3,6 +3,9 @@ import { colors } from '../../../stylesGlobal';
 
 // Estilos da listagem de projetos, estados vazios e feedback de carregamento.
 export default StyleSheet.create({
+  screen: {
+    flex: 1,
+  },
   container: {
     flex: 1,
     backgroundColor: colors.background,
@@ -134,6 +137,11 @@ export default StyleSheet.create({
     fontSize: 13,
     fontWeight: '600',
     marginTop: 12,
+  },
+  projetoCandidaturasIndisponiveis: {
+    fontSize: 13,
+    fontWeight: '600',
+    marginTop: 8,
   },
   projetoStatusContainer: {
     marginTop: 12,

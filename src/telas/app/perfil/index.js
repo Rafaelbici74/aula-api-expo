@@ -13,6 +13,7 @@ export default function Perfil() {
   const { theme } = useTheme();
   const { user, setUser } = useAuth();
   const [profile, setProfile] = useState(user);
+  const [rating, setRating] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
   const [bioModalVisible, setBioModalVisible] = useState(false);
@@ -47,11 +48,14 @@ export default function Perfil() {
       return;
     }
 
-    profileApi.buscar(user.id)
-      .then((response) => setProfile({
-        ...response.dados,
-        nome: response.dados?.nome || user.nome || '',
-      }))
+    Promise.all([profileApi.buscar(user.id), profileApi.buscarAvaliacao(user.id)])
+      .then(([profileResponse, ratingResponse]) => {
+        setProfile({
+          ...profileResponse.dados,
+          nome: profileResponse.dados?.nome || user.nome || '',
+        });
+        setRating(ratingResponse.dados || null);
+      })
       .catch((requestError) => setError(requestError.message))
       .finally(() => setLoading(false));
   }, [user?.id]);
@@ -147,6 +151,21 @@ export default function Perfil() {
         </Text>
         <Text style={[styles.email, { color: theme.mutedText }]}>{profile?.email || ''}</Text>
         {error ? <Text style={[styles.error, { color: theme.error }]}>{error}</Text> : null}
+        <View style={styles.infoBlock}>
+          <Text style={[styles.label, { color: theme.primaryDark }]}>Avaliação</Text>
+          {Number(rating?.total || 0) > 0 ? (
+            <>
+              <Text style={[styles.ratingValue, { color: theme.text }]}>
+                ★ {Number(rating.media).toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+              </Text>
+              <Text style={[styles.value, { color: theme.mutedText }]}>
+                {rating.total} {Number(rating.total) === 1 ? 'avaliação' : 'avaliações'}
+              </Text>
+            </>
+          ) : (
+            <Text style={[styles.value, { color: theme.mutedText }]}>Ainda não recebeu avaliações.</Text>
+          )}
+        </View>
         <View style={styles.infoBlock}>
           <Text style={[styles.label, { color: theme.primaryDark }]}>Bio</Text>
           <Text style={[styles.value, { color: theme.mutedText }]}>{profile?.bio || 'Nenhuma bio adicionada.'}</Text>

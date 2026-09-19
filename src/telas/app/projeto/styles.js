@@ -2,6 +2,9 @@ import { StyleSheet } from 'react-native';
 
 // Estilos da apresentação detalhada de um projeto e de seu status.
 export default StyleSheet.create({
+  screen: {
+    flex: 1,
+  },
   container: {
     flex: 1,
     backgroundColor: '#f5f7fb',
@@ -65,6 +68,82 @@ export default StyleSheet.create({
     fontWeight: '600',
     marginTop: 16,
   },
+  detailsLoading: {
+    marginTop: 24,
+  },
+  sectionTitle: {
+    fontSize: 18,
+    fontWeight: '700',
+    marginTop: 24,
+    marginBottom: 10,
+  },
+  tagsRow: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    gap: 8,
+  },
+  tag: {
+    borderRadius: 999,
+    paddingHorizontal: 12,
+    paddingVertical: 7,
+  },
+  tagText: {
+    fontSize: 13,
+    fontWeight: '600',
+  },
+  listItem: {
+    borderBottomWidth: 1,
+    paddingVertical: 10,
+  },
+  listTitle: {
+    fontSize: 15,
+    fontWeight: '700',
+  },
+  memberHeader: {
+    alignItems: 'center',
+    flexDirection: 'row',
+  },
+  memberName: {
+    flex: 1,
+  },
+  memberRating: {
+    fontSize: 12,
+    fontWeight: '600',
+    marginLeft: 8,
+  },
+  listSubtitle: {
+    fontSize: 13,
+    marginTop: 3,
+  },
+  emptyText: {
+    fontSize: 14,
+  },
+  progressText: {
+    fontSize: 14,
+  },
+  progressTrack: {
+    borderRadius: 999,
+    height: 8,
+    marginTop: 8,
+    overflow: 'hidden',
+  },
+  progressBar: {
+    borderRadius: 999,
+    height: '100%',
+  },
+  linkText: {
+    fontSize: 14,
+    fontWeight: '700',
+  },
+  linkButton: {
+    borderBottomWidth: 1,
+    marginBottom: 10,
+    paddingBottom: 8,
+  },
+  linkUrl: {
+    fontSize: 12,
+    marginTop: 3,
+  },
   dateText: {
     marginTop: 20,
     color: '#6b7280',
@@ -84,6 +163,43 @@ export default StyleSheet.create({
     fontSize: 13,
     marginTop: 8,
     textAlign: 'center',
+  },
+  applicationItem: {
+    borderWidth: 1,
+    borderRadius: 10,
+    marginBottom: 10,
+    padding: 12,
+  },
+  applicationMessage: {
+    fontSize: 13,
+    lineHeight: 19,
+    marginTop: 8,
+  },
+  applicationActions: {
+    flexDirection: 'row',
+    gap: 24,
+    justifyContent: 'flex-end',
+    marginTop: 12,
+  },
+  entryPrompt: {
+    borderRadius: 10,
+    borderWidth: 1,
+    marginTop: 14,
+    padding: 14,
+  },
+  entryPromptTitle: {
+    fontSize: 16,
+    fontWeight: '700',
+  },
+  entryPromptText: {
+    fontSize: 13,
+    marginTop: 5,
+  },
+  entryPromptActions: {
+    flexDirection: 'row',
+    gap: 24,
+    justifyContent: 'flex-end',
+    marginTop: 14,
   },
   modalBackdrop: {
     flex: 1,

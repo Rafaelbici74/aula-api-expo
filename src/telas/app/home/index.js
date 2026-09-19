@@ -5,6 +5,7 @@ import { useNavigation } from '@react-navigation/native';
 import { projetosApi } from '../../../services/projetosApi';
 import { useTheme } from '../../../theme/ThemeContext';
 import AppHeader from '../../../components/AppHeader';
+import NotificationsButton from '../../../components/NotificationsButton';
 import styles from './styles';
 
 // Mapeia os status vindos da API para textos amigáveis na interface.
@@ -58,11 +59,13 @@ export default function Home() {
   }, []);
 
   return (
-    <ScrollView
-      style={[styles.container, { backgroundColor: theme.background }]}
-      contentContainerStyle={styles.contentContainer}
-      showsVerticalScrollIndicator={false}
-    >
+    <View style={[styles.screen, { backgroundColor: theme.background }]}>
+      <NotificationsButton />
+      <ScrollView
+        style={[styles.container, { backgroundColor: theme.background }]}
+        contentContainerStyle={styles.contentContainer}
+        showsVerticalScrollIndicator={false}
+      >
       {/* Cabeçalho com título da tela e campo de pesquisa. */}
       <AppHeader title="Explore novos projetos">
         <TextInput
@@ -145,6 +148,11 @@ export default function Home() {
                     <Text style={[styles.projetoMembros, { color: theme.mutedText }]}>
                       Membros: {membrosFormatados}
                     </Text>
+                    {!projeto.aceita_candidaturas ? (
+                      <Text style={[styles.projetoCandidaturasIndisponiveis, { color: theme.error }]}>
+                        {projeto.motivo_candidatura_indisponivel || 'Candidaturas encerradas'}
+                      </Text>
+                    ) : null}
                   </Pressable>
                 );
               })
@@ -182,6 +190,7 @@ export default function Home() {
           </View>
         </View>
       </Modal>
-    </ScrollView>
+      </ScrollView>
+    </View>
   );
 }
