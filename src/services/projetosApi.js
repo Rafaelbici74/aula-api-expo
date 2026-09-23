@@ -67,6 +67,7 @@ export const projetosApi = {
   listarVagas: (projetoId) => request(`/api/projetos/${projetoId}/vagas`),
   consultarCandidatura: (projetoId, usuarioId) => request(`/api/projetos/${projetoId}/candidatura/${usuarioId}`),
   listarCandidaturas: (projetoId, usuarioId) => request(`/api/projetos/${projetoId}/candidaturas?usuario_id=${usuarioId}`),
+  buscarPerfilCandidatura: (candidaturaId, usuarioId) => request(`/api/candidaturas/${candidaturaId}/perfil?usuario_id=${usuarioId}`),
   aceitarCandidatura: (candidaturaId, usuarioId) => request(`/api/candidaturas/${candidaturaId}/aceitar`, {
     method: 'PATCH',
     body: JSON.stringify({ usuario_id: usuarioId }),
