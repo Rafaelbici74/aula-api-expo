@@ -642,6 +642,58 @@ app.get('/api/projetos/:id/candidaturas', async (req, res) => {
   }
 });
 
+app.get('/api/candidaturas/:id/perfil', async (req, res) => {
+  const candidaturaId = Number(req.params.id);
+  const responsavelId = Number(req.query.usuario_id);
+  if (![candidaturaId, responsavelId].every((value) => Number.isInteger(value) && value > 0)) {
+    return res.status(400).json({ sucesso: false, message: 'Candidatura ou usuário inválido.' });
+  }
+
+  try {
+    const [rows] = await db.query(`
+      SELECT c.id AS candidatura_id, c.usuario_id, c.projeto_id, c.vaga_id,
+             c.status AS candidatura_status, c.mensagem, c.criado_em AS candidatura_criada_em,
+             p.titulo AS projeto_titulo, u.nome, u.email, u.bio, u.localizacao, u.avatar_url,
+             ROUND(AVG(a.nota), 2) AS avaliacao_media, COUNT(a.id) AS avaliacao_total
+      FROM candidaturas c
+      INNER JOIN projetos p ON p.id = c.projeto_id AND p.criador_id = ?
+      INNER JOIN usuarios u ON u.id = c.usuario_id
+      LEFT JOIN avaliacoes a ON a.avaliado_id = c.usuario_id
+      WHERE c.id = ?
+      GROUP BY c.id, c.usuario_id, c.projeto_id, c.vaga_id, c.status, c.mensagem,
+               c.criado_em, p.titulo, u.nome, u.email, u.bio, u.localizacao, u.avatar_url
+      LIMIT 1
+    `, [responsavelId, candidaturaId]);
+    const profile = rows[0];
+    if (!profile) {
+      return res.status(404).json({ sucesso: false, message: 'Candidatura não encontrada.' });
+    }
+
+    const [functions] = await db.query(`
+      SELECT f.id, f.nome, fu.nivel_interesse
+      FROM funcoes_usuario fu
+      INNER JOIN funcoes f ON f.id = fu.funcao_id
+      WHERE fu.usuario_id = ?
+      ORDER BY f.nome ASC
+    `, [profile.usuario_id]);
+    const [skills] = await db.query(`
+      SELECT h.id, h.nome, hu.nivel
+      FROM habilidades_usuario hu
+      INNER JOIN habilidades h ON h.id = hu.habilidade_id
+      WHERE hu.usuario_id = ?
+      ORDER BY h.nome ASC
+    `, [profile.usuario_id]);
+
+    return res.json({
+      sucesso: true,
+      dados: { ...profile, funcoes: functions, habilidades: skills },
+    });
+  } catch (error) {
+    console.error('Erro ao buscar perfil da candidatura:', error);
+    return res.status(500).json({ sucesso: false, message: 'Não foi possível carregar o perfil do candidato.' });
+  }
+});
+
 app.patch('/api/candidaturas/:id/aceitar', async (req, res) => {
   const candidaturaId = Number(req.params.id);
   const responsavelId = Number(req.body?.usuario_id);
@@ -672,6 +724,30 @@ app.patch('/api/candidaturas/:id/aceitar', async (req, res) => {
     }
 
     await db.query('UPDATE candidaturas SET status = ? WHERE id = ?', ['aceito', candidaturaId]);
+    const [updatedNotifications] = await db.query(`
+      UPDATE notificacoes
+      SET tipo = 'system',
+          titulo = 'Candidato aceito, aguardando resposta do usuário',
+          descricao = ?,
+          link = ?,
+          lida = 0
+      WHERE usuario_id = ? AND tipo = 'application' AND link = ?
+    `, [
+      `A candidatura para o projeto "${candidatura.titulo}" foi aceita. Aguarde o candidato confirmar a entrada.`,
+      `/projetos/${candidatura.projeto_id}`,
+      candidatura.criador_id,
+      `/candidaturas/${candidaturaId}/projetos/${candidatura.projeto_id}`,
+    ]);
+    if (updatedNotifications.affectedRows === 0) {
+      await db.query(`
+        INSERT INTO notificacoes (usuario_id, tipo, titulo, descricao, link, lida)
+        VALUES (?, 'system', 'Candidato aceito, aguardando resposta do usuário', ?, ?, 0)
+      `, [
+        candidatura.criador_id,
+        `A candidatura para o projeto "${candidatura.titulo}" foi aceita. Aguarde o candidato confirmar a entrada.`,
+        `/projetos/${candidatura.projeto_id}`,
+      ]);
+    }
     await db.query(`
       INSERT INTO notificacoes (usuario_id, tipo, titulo, descricao, link, lida)
       VALUES (?, 'approved', 'Candidatura aceita', ?, ?, 0)
@@ -739,6 +815,7 @@ app.patch('/api/candidaturas/:id/confirmar-entrada', async (req, res) => {
     await connection.beginTransaction();
     const [rows] = await connection.query(`
       SELECT c.id, c.usuario_id, c.projeto_id, c.vaga_id, c.status,
+             p.criador_id,
              p.titulo, p.limite_membros, v.funcao_id, v.preenchidas, v.quantidade, v.status AS vaga_status,
              (SELECT COUNT(*) FROM membros_equipe me WHERE me.projeto_id = c.projeto_id AND me.status = 'ativo') AS membros_atuais
       FROM candidaturas c
@@ -777,6 +854,14 @@ app.patch('/api/candidaturas/:id/confirmar-entrada', async (req, res) => {
       [candidatura.vaga_id],
     );
     await connection.query('UPDATE candidaturas SET status = ? WHERE id = ?', ['aceito', candidaturaId]);
+    await connection.query(`
+      INSERT INTO notificacoes (usuario_id, tipo, titulo, descricao, link, lida)
+      VALUES (?, 'system', 'Novo membro no projeto', ?, ?, 0)
+    `, [
+      candidatura.criador_id,
+      `O usuário confirmou a entrada no projeto "${candidatura.titulo}".`,
+      `/projetos/${candidatura.projeto_id}`,
+    ]);
     await connection.commit();
     return res.json({ sucesso: true, message: 'Você agora faz parte do projeto.' });
   } catch (error) {
@@ -858,6 +943,16 @@ app.post('/api/candidaturas', async (req, res) => {
       return res.status(409).json({ sucesso: false, message: 'O limite de membros deste projeto foi atingido.' });
     }
 
+    const [activeMembers] = await db.query(
+      `SELECT id FROM membros_equipe
+       WHERE usuario_id = ? AND projeto_id = ? AND status = 'ativo'
+       LIMIT 1`,
+      [usuarioId, projetoId],
+    );
+    if (activeMembers[0]) {
+      return res.status(409).json({ sucesso: false, message: 'Você já faz parte deste projeto.' });
+    }
+
     const [vagas] = await db.query(
       `SELECT id FROM vagas_projeto
        WHERE id = ? AND projeto_id = ? AND status = 'aberta' AND preenchidas < quantidade
@@ -881,6 +976,25 @@ app.post('/api/candidaturas', async (req, res) => {
        VALUES (?, ?, ?, 'pendente', ?)`,
       [usuarioId, projetoId, vagaId, mensagem],
     );
+    const [created] = await db.query(
+      `SELECT c.id, p.criador_id, p.titulo
+       FROM candidaturas c
+       INNER JOIN projetos p ON p.id = c.projeto_id
+       WHERE c.usuario_id = ? AND c.projeto_id = ? AND c.vaga_id = ?
+       ORDER BY c.id DESC
+       LIMIT 1`,
+      [usuarioId, projetoId, vagaId],
+    );
+    if (created[0]) {
+      await db.query(`
+        INSERT INTO notificacoes (usuario_id, tipo, titulo, descricao, link, lida)
+        VALUES (?, 'application', 'Nova solicitação para entrar no projeto', ?, ?, 0)
+      `, [
+        created[0].criador_id,
+        `Um usuário enviou uma candidatura para o projeto "${created[0].titulo}".`,
+        `/candidaturas/${created[0].id}/projetos/${projetoId}`,
+      ]);
+    }
     return res.status(201).json({ sucesso: true, message: 'Candidatura enviada com sucesso.' });
   } catch (error) {
     console.error('Erro ao enviar candidatura:', error);
