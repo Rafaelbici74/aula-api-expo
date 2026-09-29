@@ -21,8 +21,8 @@ export default function CadUsuario() {
       return;
     }
 
-    if (password.length < 6) {
-      Alert.alert('A senha deve ter pelo menos 6 caracteres');
+    if (password.length < 6 || !/[A-Z]/.test(password)) {
+      Alert.alert('A senha deve ter pelo menos 6 caracteres e conter uma letra maiúscula');
       return;
     }
 
@@ -34,6 +34,11 @@ export default function CadUsuario() {
     setPasswordError('');
     Alert.alert('Cadastro realizado', 'Bem-vindo ' + name);
     navigation.navigate('myTab');
+
+    if (email.trim().includes('@') && email.trim().includes('.')) {
+      Alert.alert('por favor digite um email valido')
+
+    }
   }
 
   return (
