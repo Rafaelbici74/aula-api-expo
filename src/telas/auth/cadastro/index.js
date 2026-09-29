@@ -31,14 +31,17 @@ export default function CadUsuario() {
       return;
     }
 
+    if (!email.trim().includes('@') || !email.trim().includes('.')) {
+      Alert.alert('por favor digite um email valido')
+      return;
+
+    }
+
     setPasswordError('');
     Alert.alert('Cadastro realizado', 'Bem-vindo ' + name);
     navigation.navigate('myTab');
 
-    if (email.trim().includes('@') && email.trim().includes('.')) {
-      Alert.alert('por favor digite um email valido')
-
-    }
+    
   }
 
   return (
