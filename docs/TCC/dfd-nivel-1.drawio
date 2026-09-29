@@ -1,0 +1,76 @@
+<mxfile host="app.diagrams.net" modified="2026-09-26T00:00:00.000Z" agent="Copilot" version="24.7.17" type="device">
+  <diagram id="dfd-nivel-1" name="DFD Nivel 1">
+    <mxGraphModel dx="1600" dy="900" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1600" pageHeight="900" math="0" shadow="0">
+      <root>
+        <mxCell id="0"/>
+        <mxCell id="1" parent="0"/>
+        <mxCell id="title" value="DFD Nível 1 — Aplicação de projetos colaborativos" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;fontSize=22;fontStyle=1;fontColor=#1f2937;" vertex="1" parent="1">
+          <mxGeometry x="30" y="10" width="1000" height="35" as="geometry"/>
+        </mxCell>
+        <mxCell id="scope" value="Fluxos confirmados na aplicação mobile, na API Express e no acesso ao banco MySQL." style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;fontSize=12;fontColor=#4b5563;" vertex="1" parent="1">
+          <mxGeometry x="30" y="42" width="1000" height="25" as="geometry"/>
+        </mxCell>
+        <mxCell id="user" value="Usuário&#xa;(candidato, líder ou membro)" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#1f2937;strokeWidth=2;fontSize=14;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="600" y="75" width="220" height="90" as="geometry"/>
+        </mxCell>
+        <mxCell id="ibge" value="Serviço de localidades&#xa;IBGE" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#1f2937;strokeWidth=2;fontSize=14;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="25" y="285" width="180" height="75" as="geometry"/>
+        </mxCell>
+        <mxCell id="p1" value="1.0&#xa;Autenticar e&#xa;gerenciar perfil" style="ellipse;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#1f2937;strokeWidth=2;fontSize=14;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="260" y="260" width="180" height="115" as="geometry"/>
+        </mxCell>
+        <mxCell id="p2" value="2.0&#xa;Consultar projetos,&#xa;equipe e vagas" style="ellipse;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#1f2937;strokeWidth=2;fontSize=14;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="500" y="260" width="180" height="115" as="geometry"/>
+        </mxCell>
+        <mxCell id="p3" value="3.0&#xa;Gerenciar candidaturas&#xa;e entrada no projeto" style="ellipse;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#1f2937;strokeWidth=2;fontSize=14;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="740" y="260" width="180" height="115" as="geometry"/>
+        </mxCell>
+        <mxCell id="p4" value="4.0&#xa;Consultar e atualizar&#xa;tarefas" style="ellipse;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#1f2937;strokeWidth=2;fontSize=14;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="980" y="260" width="180" height="115" as="geometry"/>
+        </mxCell>
+        <mxCell id="p5" value="5.0&#xa;Consultar e gerenciar&#xa;notificações" style="ellipse;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#1f2937;strokeWidth=2;fontSize=14;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="1220" y="260" width="180" height="115" as="geometry"/>
+        </mxCell>
+        <mxCell id="d1" value="D1 — Banco de dados MySQL&#xa;&#xa;usuarios; funcoes_usuario; habilidades_usuario; funcoes; habilidades; projetos; membros_equipe; vagas_projeto; habilidades_projeto; candidaturas; tarefas; avaliacoes; eventos_projeto; notificacoes" style="shape=datastore;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#1f2937;strokeWidth=2;fontSize=13;align=left;spacingLeft=18;spacingRight=12;" vertex="1" parent="1">
+          <mxGeometry x="100" y="550" width="1400" height="220" as="geometry"/>
+        </mxCell>
+        <mxCell id="e_user_p1" value="credenciais e dados de perfil / resultado do login e perfil" style="startArrow=block;endArrow=block;html=1;rounded=0;orthogonalLoop=1;jettySize=auto;strokeColor=#374151;fontSize=11;labelBackgroundColor=#ffffff;" edge="1" parent="1" source="user" target="p1">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="e_user_p2" value="consultas e filtros / projetos, equipe e vagas" style="startArrow=block;endArrow=block;html=1;rounded=0;orthogonalLoop=1;jettySize=auto;strokeColor=#374151;fontSize=11;labelBackgroundColor=#ffffff;" edge="1" parent="1" source="user" target="p2">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="e_user_p3" value="candidatura, decisão e confirmação / situação e resultado" style="startArrow=block;endArrow=block;html=1;rounded=0;orthogonalLoop=1;jettySize=auto;strokeColor=#374151;fontSize=11;labelBackgroundColor=#ffffff;" edge="1" parent="1" source="user" target="p3">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="e_user_p4" value="consultas e ações de tarefas / tarefas e status" style="startArrow=block;endArrow=block;html=1;rounded=0;orthogonalLoop=1;jettySize=auto;strokeColor=#374151;fontSize=11;labelBackgroundColor=#ffffff;" edge="1" parent="1" source="user" target="p4">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="e_user_p5" value="consulta e atualização de leitura / notificações e contador" style="startArrow=block;endArrow=block;html=1;rounded=0;orthogonalLoop=1;jettySize=auto;strokeColor=#374151;fontSize=11;labelBackgroundColor=#ffffff;" edge="1" parent="1" source="user" target="p5">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="e_p1_ibge" value="consulta / listas de estados e municípios" style="startArrow=block;endArrow=block;html=1;rounded=0;orthogonalLoop=1;jettySize=auto;strokeColor=#374151;fontSize=11;labelBackgroundColor=#ffffff;exitX=0;exitY=0.5;entryX=1;entryY=0.5;" edge="1" parent="1" source="p1" target="ibge">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="e_p1_d1" value="usuarios; avaliacoes" style="startArrow=block;endArrow=block;html=1;rounded=0;orthogonalLoop=1;jettySize=auto;strokeColor=#2563eb;fontSize=11;labelBackgroundColor=#ffffff;exitX=0.5;exitY=1;entryX=0.182;entryY=0;" edge="1" parent="1" source="p1" target="d1">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="e_p2_d1" value="projetos; equipe; vagas; habilidades; avaliações; tarefas" style="startArrow=block;endArrow=block;html=1;rounded=0;orthogonalLoop=1;jettySize=auto;strokeColor=#2563eb;fontSize=11;labelBackgroundColor=#ffffff;exitX=0.5;exitY=1;entryX=0.354;entryY=0;" edge="1" parent="1" source="p2" target="d1">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="e_p3_d1" value="candidaturas; projetos; vagas; membros; notificações" style="startArrow=block;endArrow=block;html=1;rounded=0;orthogonalLoop=1;jettySize=auto;strokeColor=#2563eb;fontSize=11;labelBackgroundColor=#ffffff;exitX=0.5;exitY=1;entryX=0.525;entryY=0;" edge="1" parent="1" source="p3" target="d1">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="e_p4_d1" value="tarefas; projetos; equipe; responsáveis" style="startArrow=block;endArrow=block;html=1;rounded=0;orthogonalLoop=1;jettySize=auto;strokeColor=#2563eb;fontSize=11;labelBackgroundColor=#ffffff;exitX=0.5;exitY=1;entryX=0.696;entryY=0;" edge="1" parent="1" source="p4" target="d1">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="e_p5_d1" value="notificações" style="startArrow=block;endArrow=block;html=1;rounded=0;orthogonalLoop=1;jettySize=auto;strokeColor=#2563eb;fontSize=11;labelBackgroundColor=#ffffff;exitX=0.5;exitY=1;entryX=0.868;entryY=0;" edge="1" parent="1" source="p5" target="d1">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="legend" value="Notação: entidades externas = retângulos; processos = círculos numerados; D1 = armazenamento de dados. Setas nas duas pontas representam fluxos de entrada e retorno. A interação mobile/API usa HTTP/JSON; a integração IBGE é chamada pelo aplicativo. O D1 lista somente tabelas lidas ou escritas pelas rotas analisadas." style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=top;fontSize=12;fontColor=#374151;whiteSpace=wrap;" vertex="1" parent="1">
+          <mxGeometry x="25" y="805" width="1420" height="55" as="geometry"/>
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>
