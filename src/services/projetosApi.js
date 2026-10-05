@@ -51,6 +51,22 @@ export const projetosApi = {
   listar: () => request('/api/projetos'),
   listarDoUsuario: (usuarioId) => request(`/api/usuarios/${usuarioId}/projetos`),
   listarTarefas: (projetoId, usuarioId) => request(`/api/projetos/${projetoId}/tarefas?usuario_id=${usuarioId}`),
+  criarTarefa: (projetoId, tarefa) => request(`/api/projetos/${projetoId}/tarefas`, {
+    method: 'POST',
+    body: JSON.stringify(tarefa),
+  }),
+  editarTarefa: (tarefaId, tarefa) => request(`/api/tarefas/${tarefaId}`, {
+    method: 'PATCH',
+    body: JSON.stringify(tarefa),
+  }),
+  concluirTarefa: (tarefaId, usuarioId) => request(`/api/tarefas/${tarefaId}/concluir`, {
+    method: 'PATCH',
+    body: JSON.stringify({ usuario_id: usuarioId }),
+  }),
+  excluirTarefa: (tarefaId, usuarioId) => request(`/api/tarefas/${tarefaId}`, {
+    method: 'DELETE',
+    body: JSON.stringify({ usuario_id: usuarioId }),
+  }),
   moverTarefa: (tarefaId, usuarioId, status) => request(`/api/tarefas/${tarefaId}/status`, {
     method: 'PATCH',
     body: JSON.stringify({ usuario_id: usuarioId, status }),

@@ -444,31 +444,9 @@ Todas as rotas que alteram dados devem validar entrada, existência do recurso, 
 
 O schema real do projeto está documentado em [docs/project/database.md](docs/project/database.md).
 
-Entre as principais tabelas estão:
+O snapshot consultado em 2026-10-02 contém 17 tabelas: `avaliacoes`, `candidaturas`, `conquistas`, `conquistas_usuario`, `eventos_projeto`, `eventos_xp`, `funcoes`, `habilidades`, `habilidades_projeto`, `habilidades_usuario`, `membros_equipe`, `mensagens`, `notificacoes`, `projetos`, `tarefas`, `usuarios` e `vagas_projeto`. Tipos, defaults, índices e chaves estrangeiras estão detalhados em [docs/project/database.md](docs/project/database.md).
 
-- `usuarios`;
-- `projetos`;
-- `membros_equipe`;
-- `vagas_projeto`;
-- `candidaturas`;
-- `tarefas`;
-- `subtarefas`;
-- `notificacoes`;
-- `avaliacoes`;
-- `habilidades`;
-- `funcoes`;
-- tabelas de integração com GitHub;
-- tabelas de eventos, reputação e estatísticas.
-
-Relacionamentos importantes:
-
-- projetos pertencem a um criador em `usuarios`;
-- membros relacionam usuários e projetos;
-- tarefas pertencem a projetos e podem ter um responsável;
-- vagas pertencem a projetos e funções;
-- candidaturas relacionam usuários, projetos e vagas;
-- subtarefas pertencem a tarefas;
-- commits e pull requests relacionam-se a tarefas e projetos.
+Relacionamentos confirmados por chaves estrangeiras incluem projetos com criadores, membros, vagas, tarefas, avaliações e eventos; usuários com membros, tarefas, mensagens, candidaturas, notificações, avaliações e eventos; e funções/habilidades com vagas e vínculos correspondentes. Consulte o documento do schema para as colunas e regras `ON DELETE` exatas.
 
 Antes de qualquer alteração relacionada ao banco, consulte obrigatoriamente o schema real, as queries existentes e [docs/project/database.md](docs/project/database.md).
 
@@ -492,17 +470,7 @@ Utilizada para consulta de dados de localização por meio de `src/services/ibge
 
 ### GitHub
 
-O banco possui estruturas para:
-
-- repositórios;
-- branches;
-- commits;
-- pull requests;
-- webhooks;
-- status de integração;
-- atividades relacionadas a tarefas.
-
-As estruturas de GitHub existentes devem ser consultadas antes de implementar qualquer novo fluxo de integração.
+No schema consultado em 2026-10-02, não há tabelas de repositórios, branches, commits, pull requests ou webhooks, nem colunas de repositório GitHub em `projetos` ou `tarefas`. `usuarios` possui apenas campos de identidade/conta GitHub (`github_user_id`, `github_login`, `github_avatar_url` e `github_connected_at`), além de `cadastro_origem`. A presença desses campos não confirma, por si só, fluxos funcionais de integração.
 
 ## Scripts
 

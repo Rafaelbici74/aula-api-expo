@@ -363,6 +363,54 @@ app.get('/api/projetos/:id/tarefas', async (req, res) => {
   }
 });
 
+app.post('/api/projetos/:id/tarefas', async (req, res) => {
+  const projetoId = Number(req.params.id);
+  const usuarioId = Number(req.body?.usuario_id);
+  const titulo = typeof req.body?.titulo === 'string' ? req.body.titulo.trim() : '';
+  const prioridade = req.body?.prioridade;
+  const responsavelId = req.body?.responsavel_id == null ? null : Number(req.body.responsavel_id);
+  const prioridadesValidas = ['low', 'medium', 'high'];
+
+  if (![projetoId, usuarioId].every((value) => Number.isInteger(value) && value > 0)
+    || (responsavelId !== null && (!Number.isInteger(responsavelId) || responsavelId <= 0))
+    || !titulo || titulo.length > 255 || !prioridadesValidas.includes(prioridade)) {
+    return res.status(400).json({ sucesso: false, message: 'Informe título, prioridade e um responsável válido.' });
+  }
+
+  try {
+    const [members] = await db.query(`
+      SELECT projeto.id
+      FROM projetos projeto
+      INNER JOIN membros_equipe membro ON membro.projeto_id = projeto.id
+      WHERE projeto.id = ? AND membro.usuario_id = ? AND membro.status = 'ativo'
+      LIMIT 1
+    `, [projetoId, usuarioId]);
+    if (!members[0]) {
+      return res.status(403).json({ sucesso: false, message: 'Somente membros ativos podem criar tarefas.' });
+    }
+
+    if (responsavelId !== null) {
+      const [assignees] = await db.query(`
+        SELECT id FROM membros_equipe
+        WHERE projeto_id = ? AND usuario_id = ? AND status = 'ativo'
+        LIMIT 1
+      `, [projetoId, responsavelId]);
+      if (!assignees[0]) {
+        return res.status(400).json({ sucesso: false, message: 'O responsável deve ser membro ativo do projeto.' });
+      }
+    }
+
+    const [result] = await db.query(`
+      INSERT INTO tarefas (projeto_id, responsavel_id, titulo, prioridade, status)
+      VALUES (?, ?, ?, ?, 'todo')
+    `, [projetoId, responsavelId, titulo, prioridade]);
+    return res.status(201).json({ sucesso: true, message: 'Tarefa criada com sucesso.', dados: { id: result.insertId } });
+  } catch (error) {
+    console.error('Erro ao criar tarefa:', error);
+    return res.status(500).json({ sucesso: false, message: 'Não foi possível criar a tarefa.' });
+  }
+});
+
 async function buscarPermissaoTarefa(tarefaId, usuarioId) {
   const [rows] = await db.query(`
     SELECT t.id, t.projeto_id, t.responsavel_id, t.status, p.criador_id,
@@ -376,6 +424,90 @@ async function buscarPermissaoTarefa(tarefaId, usuarioId) {
   `, [usuarioId, tarefaId]);
   return rows[0];
 }
+
+function usuarioPodeGerenciarTarefa(task, usuarioId) {
+  return task.membro_status === 'ativo'
+    && (Number(task.criador_id) === usuarioId || Number(task.responsavel_id) === usuarioId);
+}
+
+app.patch('/api/tarefas/:id', async (req, res) => {
+  const tarefaId = Number(req.params.id);
+  const usuarioId = Number(req.body?.usuario_id);
+  const titulo = typeof req.body?.titulo === 'string' ? req.body.titulo.trim() : '';
+  const prioridade = req.body?.prioridade;
+  const prioridadesValidas = ['low', 'medium', 'high'];
+
+  if (![tarefaId, usuarioId].every((value) => Number.isInteger(value) && value > 0)
+    || !titulo || titulo.length > 255 || !prioridadesValidas.includes(prioridade)) {
+    return res.status(400).json({ sucesso: false, message: 'Informe título, prioridade e usuário válidos.' });
+  }
+
+  try {
+    const task = await buscarPermissaoTarefa(tarefaId, usuarioId);
+    if (!task) return res.status(404).json({ sucesso: false, message: 'Tarefa não encontrada.' });
+    if (!usuarioPodeGerenciarTarefa(task, usuarioId)) {
+      return res.status(403).json({ sucesso: false, message: 'Somente o líder ou responsável pode editar esta tarefa.' });
+    }
+    await db.query(
+      'UPDATE tarefas SET titulo = ?, prioridade = ? WHERE id = ? AND excluida_em IS NULL',
+      [titulo, prioridade, tarefaId],
+    );
+    return res.json({ sucesso: true, message: 'Tarefa atualizada com sucesso.' });
+  } catch (error) {
+    console.error('Erro ao editar tarefa:', error);
+    return res.status(500).json({ sucesso: false, message: 'Não foi possível atualizar a tarefa.' });
+  }
+});
+
+app.patch('/api/tarefas/:id/concluir', async (req, res) => {
+  const tarefaId = Number(req.params.id);
+  const usuarioId = Number(req.body?.usuario_id);
+  if (![tarefaId, usuarioId].every((value) => Number.isInteger(value) && value > 0)) {
+    return res.status(400).json({ sucesso: false, message: 'Tarefa ou usuário inválido.' });
+  }
+
+  try {
+    const task = await buscarPermissaoTarefa(tarefaId, usuarioId);
+    if (!task) return res.status(404).json({ sucesso: false, message: 'Tarefa não encontrada.' });
+    if (!usuarioPodeGerenciarTarefa(task, usuarioId)) {
+      return res.status(403).json({ sucesso: false, message: 'Somente o líder ou responsável pode finalizar esta tarefa.' });
+    }
+    await db.query(
+      `UPDATE tarefas
+       SET status = 'done', concluida_em = COALESCE(concluida_em, NOW())
+       WHERE id = ? AND excluida_em IS NULL`,
+      [tarefaId],
+    );
+    return res.json({ sucesso: true, message: 'Tarefa finalizada com sucesso.' });
+  } catch (error) {
+    console.error('Erro ao finalizar tarefa:', error);
+    return res.status(500).json({ sucesso: false, message: 'Não foi possível finalizar a tarefa.' });
+  }
+});
+
+app.delete('/api/tarefas/:id', async (req, res) => {
+  const tarefaId = Number(req.params.id);
+  const usuarioId = Number(req.body?.usuario_id);
+  if (![tarefaId, usuarioId].every((value) => Number.isInteger(value) && value > 0)) {
+    return res.status(400).json({ sucesso: false, message: 'Tarefa ou usuário inválido.' });
+  }
+
+  try {
+    const task = await buscarPermissaoTarefa(tarefaId, usuarioId);
+    if (!task) return res.status(404).json({ sucesso: false, message: 'Tarefa não encontrada.' });
+    if (!usuarioPodeGerenciarTarefa(task, usuarioId)) {
+      return res.status(403).json({ sucesso: false, message: 'Somente o líder ou responsável pode excluir esta tarefa.' });
+    }
+    await db.query(
+      'UPDATE tarefas SET excluida_em = NOW() WHERE id = ? AND excluida_em IS NULL',
+      [tarefaId],
+    );
+    return res.json({ sucesso: true, message: 'Tarefa excluída com sucesso.' });
+  } catch (error) {
+    console.error('Erro ao excluir tarefa:', error);
+    return res.status(500).json({ sucesso: false, message: 'Não foi possível excluir a tarefa.' });
+  }
+});
 
 app.patch('/api/tarefas/:id/status', async (req, res) => {
   const tarefaId = Number(req.params.id);
@@ -396,7 +528,16 @@ app.patch('/api/tarefas/:id/status', async (req, res) => {
     if (!podeMover) {
       return res.status(403).json({ sucesso: false, message: 'Você só pode mover tarefas atribuídas a você.' });
     }
-    await db.query('UPDATE tarefas SET status = ? WHERE id = ? AND excluida_em IS NULL', [status, tarefaId]);
+    await db.query(
+      `UPDATE tarefas
+       SET status = ?,
+           concluida_em = CASE
+             WHEN ? = 'done' THEN COALESCE(concluida_em, NOW())
+             ELSE NULL
+           END
+       WHERE id = ? AND excluida_em IS NULL`,
+      [status, status, tarefaId],
+    );
     return res.json({ sucesso: true, message: 'Tarefa movida com sucesso.' });
   } catch (error) {
     console.error('Erro ao mover tarefa:', error);
@@ -669,13 +810,6 @@ app.get('/api/candidaturas/:id/perfil', async (req, res) => {
       return res.status(404).json({ sucesso: false, message: 'Candidatura não encontrada.' });
     }
 
-    const [functions] = await db.query(`
-      SELECT f.id, f.nome, fu.nivel_interesse
-      FROM funcoes_usuario fu
-      INNER JOIN funcoes f ON f.id = fu.funcao_id
-      WHERE fu.usuario_id = ?
-      ORDER BY f.nome ASC
-    `, [profile.usuario_id]);
     const [skills] = await db.query(`
       SELECT h.id, h.nome, hu.nivel
       FROM habilidades_usuario hu
@@ -686,7 +820,7 @@ app.get('/api/candidaturas/:id/perfil', async (req, res) => {
 
     return res.json({
       sucesso: true,
-      dados: { ...profile, funcoes: functions, habilidades: skills },
+      dados: { ...profile, funcoes: [], habilidades: skills },
     });
   } catch (error) {
     console.error('Erro ao buscar perfil da candidatura:', error);

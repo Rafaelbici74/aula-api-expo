@@ -230,9 +230,9 @@ export default function NotificationsButton() {
                 <Text style={{ color: theme.mutedText, marginTop: 4 }}>{candidateProfile.bio || 'Nenhuma bio adicionada.'}</Text>
                 <Text style={{ color: theme.text, fontWeight: '700', marginTop: 16 }}>Localização</Text>
                 <Text style={{ color: theme.mutedText, marginTop: 4 }}>{candidateProfile.localizacao || 'Não informada.'}</Text>
-                <Text style={{ color: theme.text, fontWeight: '700', marginTop: 16 }}>Funções e habilidades</Text>
+                <Text style={{ color: theme.text, fontWeight: '700', marginTop: 16 }}>Habilidades</Text>
                 <Text style={{ color: theme.mutedText, marginTop: 4 }}>
-                  {[...(candidateProfile.funcoes || []).map((item) => item.nome), ...(candidateProfile.habilidades || []).map((item) => item.nome)].join(', ') || 'Nenhuma informação cadastrada.'}
+                  {(candidateProfile.habilidades || []).map((item) => item.nome).join(', ') || 'Nenhuma habilidade cadastrada.'}
                 </Text>
                 <Text style={{ color: theme.text, fontWeight: '700', marginTop: 16 }}>Mensagem da candidatura</Text>
                 <Text style={{ color: theme.mutedText, marginTop: 4 }}>{candidateProfile.mensagem || 'Nenhuma mensagem enviada.'}</Text>
