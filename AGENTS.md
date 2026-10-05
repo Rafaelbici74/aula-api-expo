@@ -55,4 +55,6 @@ Consulte os documentos conforme a tarefa:
 - Workflow: `docs/project/workflow.md`
 - Manutenção e documentação: `docs/project/documentation-maintenance.md`
 
+Ao implementar ou alterar funcionalidades, regras de negócio, comportamento, arquitetura, APIs, banco de dados, integrações ou validações, identifique e atualize, no mesmo trabalho, toda documentação diretamente afetada. Consulte `docs/project/documentation-maintenance.md` para decidir entre atualizar instruções temáticas, README e outros documentos pertinentes. Atualize somente o que for necessário, sem duplicar conteúdo; se nenhuma documentação precisar mudar, registre o motivo ao relatar a conclusão.
+
 `docs/TCC` é reservado exclusivamente para instruções acadêmicas e documentação do TCC.

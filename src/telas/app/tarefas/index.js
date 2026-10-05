@@ -1,4 +1,4 @@
-import { useCallback, useRef, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import {
   ActivityIndicator,
   Alert,
@@ -34,6 +34,9 @@ const priorityLabels = {
   high: 'Alta',
 };
 
+const TASK_DRAG_HOLD_DURATION = 2500;
+const TASK_COLUMN_STEP = 272;
+
 function TaskCard({
   task,
   theme,
@@ -41,45 +44,146 @@ function TaskCard({
   canMove,
   canManage,
   onStartDrag,
+  onHoldReady,
+  onDragMove,
   onFinishDrag,
+  onCancelDrag,
   onOpenMenu,
   onClaim,
+  isHidden = false,
 }) {
-  const position = useRef(new Animated.Value(0)).current;
+  const scale = useRef(new Animated.Value(1)).current;
+  const holdProgress = useRef(new Animated.Value(0)).current;
   const dragStarted = useRef(false);
-  const dragTimer = useRef(null);
+  const touchActive = useRef(false);
+  const holdReady = useRef(false);
+  const touchOrigin = useRef(null);
+  const cardRef = useRef(null);
+  const taskRef = useRef(task);
+  const canMoveRef = useRef(canMove);
+  const onStartDragRef = useRef(onStartDrag);
+  const onHoldReadyRef = useRef(onHoldReady);
+  const onDragMoveRef = useRef(onDragMove);
+  const onFinishDragRef = useRef(onFinishDrag);
+  const onCancelDragRef = useRef(onCancelDrag);
+  const [holding, setHolding] = useState(false);
+  taskRef.current = task;
+  canMoveRef.current = canMove;
+  onStartDragRef.current = onStartDrag;
+  onHoldReadyRef.current = onHoldReady;
+  onDragMoveRef.current = onDragMove;
+  onFinishDragRef.current = onFinishDrag;
+  onCancelDragRef.current = onCancelDrag;
+
+  useEffect(() => () => {
+    touchActive.current = false;
+    holdProgress.stopAnimation();
+    scale.stopAnimation();
+  }, [holdProgress, scale]);
+
+  function resetHold() {
+    const wasReady = holdReady.current;
+    touchActive.current = false;
+    holdReady.current = false;
+    touchOrigin.current = null;
+    holdProgress.stopAnimation();
+    holdProgress.setValue(0);
+    scale.stopAnimation();
+    Animated.spring(scale, {
+      toValue: 1,
+      useNativeDriver: true,
+    }).start();
+    setHolding(false);
+    if (wasReady) onHoldReadyRef.current(null);
+  }
+
+  function beginHold(event) {
+    if (!canMoveRef.current) return;
+    resetHold();
+    touchActive.current = true;
+    touchOrigin.current = {
+      x: event.nativeEvent.pageX,
+      y: event.nativeEvent.pageY,
+    };
+    setHolding(true);
+    Animated.timing(holdProgress, {
+      toValue: 1,
+      duration: TASK_DRAG_HOLD_DURATION,
+      useNativeDriver: false,
+    }).start(({ finished }) => {
+      if (!finished || !touchActive.current) return;
+      holdReady.current = true;
+      onHoldReadyRef.current(taskRef.current.id);
+      Animated.spring(scale, {
+        toValue: 1.035,
+        useNativeDriver: true,
+      }).start();
+    });
+  }
+
+  function cancelHoldOnMovement(event) {
+    if (!touchActive.current || holdReady.current || !touchOrigin.current) return;
+    const dx = event.nativeEvent.pageX - touchOrigin.current.x;
+    const dy = event.nativeEvent.pageY - touchOrigin.current.y;
+    if (Math.abs(dx) < 10 && Math.abs(dy) < 10) return;
+    resetHold();
+  }
+
   const panResponder = useRef(PanResponder.create({
-    onStartShouldSetPanResponder: () => canMove,
-    onPanResponderGrant: () => {
-      dragStarted.current = false;
-      dragTimer.current = setTimeout(() => {
-        dragStarted.current = true;
-        onStartDrag(task.id);
-      }, 300);
+    onStartShouldSetPanResponder: () => false,
+    onMoveShouldSetPanResponderCapture: (_, gesture) => (
+      canMoveRef.current
+      && holdReady.current
+      && (Math.abs(gesture.dx) > 4 || Math.abs(gesture.dy) > 4)
+    ),
+    onPanResponderGrant: (_, gesture) => {
+      dragStarted.current = true;
+      cardRef.current?.measureInWindow((x, y, width, height) => {
+        onStartDragRef.current(
+          taskRef.current,
+          { x, y, width, height },
+          { x: gesture.moveX, y: gesture.moveY },
+        );
+      });
     },
     onPanResponderMove: (_, gesture) => {
-      if (dragStarted.current) position.setValue(gesture.dx);
+      if (!dragStarted.current) return;
+      onDragMoveRef.current(gesture.moveX, gesture.moveY);
     },
     onPanResponderRelease: (_, gesture) => {
-      if (dragTimer.current) clearTimeout(dragTimer.current);
-      if (dragStarted.current) onFinishDrag(task, gesture.dx);
+      if (dragStarted.current) {
+        onFinishDragRef.current(taskRef.current, gesture.dx);
+      } else {
+        onCancelDragRef.current();
+      }
       dragStarted.current = false;
-      position.setValue(0);
+      resetHold();
     },
     onPanResponderTerminate: () => {
-      if (dragTimer.current) clearTimeout(dragTimer.current);
       dragStarted.current = false;
-      position.setValue(0);
+      onCancelDragRef.current();
+      resetHold();
     },
+    onPanResponderTerminationRequest: () => false,
   })).current;
 
   return (
     <Animated.View
+      ref={cardRef}
       {...panResponder.panHandlers}
+      onTouchStart={beginHold}
+      onTouchMove={cancelHoldOnMovement}
+      onTouchEnd={() => {
+        if (!dragStarted.current) resetHold();
+      }}
+      onTouchCancel={() => {
+        if (!dragStarted.current) resetHold();
+      }}
       style={[
         styles.taskCard,
         { backgroundColor: theme.surface, borderColor: theme.border },
-        { transform: [{ translateX: position }] },
+        isHidden && styles.hiddenTaskCard,
+        { transform: [{ scale }] },
       ]}
     >
       {canManage || isResponsible ? (
@@ -111,6 +215,24 @@ function TaskCard({
           <Text style={[styles.tasksButtonText, { color: theme.primary }]}>Pegar tarefa</Text>
         </Pressable>
       ) : null}
+      {holding ? (
+        <View pointerEvents="none" style={styles.holdFeedback}>
+          <View style={[styles.holdTrack, { backgroundColor: theme.border }]}>
+            <Animated.View
+              style={[
+                styles.holdProgress,
+                {
+                  backgroundColor: theme.primary,
+                  width: holdProgress.interpolate({
+                    inputRange: [0, 1],
+                    outputRange: ['0%', '100%'],
+                  }),
+                },
+              ]}
+            />
+          </View>
+        </View>
+      ) : null}
     </Animated.View>
   );
 }
@@ -135,6 +257,20 @@ export default function Tarefas() {
   const [taskFormError, setTaskFormError] = useState('');
   const [taskSubmitting, setTaskSubmitting] = useState(false);
   const [actionTaskId, setActionTaskId] = useState(null);
+  const [dragArmedTaskId, setDragArmedTaskId] = useState(null);
+  const [draggedTask, setDraggedTask] = useState(null);
+  const boardScrollRef = useRef(null);
+  const screenRef = useRef(null);
+  const screenOrigin = useRef({ x: 0, y: 0 });
+  const dragOverlayX = useRef(new Animated.Value(0)).current;
+  const dragOverlayY = useRef(new Animated.Value(0)).current;
+  const dragGrabOffset = useRef({ x: 0, y: 0 });
+  const boardViewport = useRef({ x: 0, width: 0 });
+  const boardContentWidth = useRef(0);
+  const boardScrollX = useRef(0);
+  const dragStartScrollX = useRef(0);
+  const autoScrollDirection = useRef(0);
+  const autoScrollInterval = useRef(null);
   const projetoId = route.params?.projetoId;
   const tituloProjeto = route.params?.tituloProjeto || 'Projeto';
 
@@ -172,15 +308,80 @@ export default function Tarefas() {
     }
   }, [actionTaskId, loadTasks]);
 
+  const stopAutoScroll = useCallback(() => {
+    if (autoScrollInterval.current) clearInterval(autoScrollInterval.current);
+    autoScrollInterval.current = null;
+    autoScrollDirection.current = 0;
+  }, []);
+
+  useEffect(() => () => stopAutoScroll(), [stopAutoScroll]);
+
+  const clearDragOverlay = useCallback(() => {
+    setDraggedTask(null);
+    stopAutoScroll();
+  }, [stopAutoScroll]);
+
+  const startTaskDrag = useCallback((task, bounds, pointer) => {
+    dragStartScrollX.current = boardScrollX.current;
+    dragGrabOffset.current = {
+      x: pointer.x - bounds.x,
+      y: pointer.y - bounds.y,
+    };
+    dragOverlayX.setValue(bounds.x - screenOrigin.current.x);
+    dragOverlayY.setValue(bounds.y - screenOrigin.current.y);
+    setDraggedTask({
+      ...task,
+      overlayCanManage: isLeader || Number(task.responsavel_id) === Number(user?.id),
+      overlayIsResponsible: Number(task.responsavel_id) === Number(user?.id),
+      overlayWidth: bounds.width,
+      overlayHeight: bounds.height,
+    });
+    stopAutoScroll();
+  }, [dragOverlayX, dragOverlayY, isLeader, stopAutoScroll, user?.id]);
+
+  const updateAutoScroll = useCallback((pointerX, pointerY) => {
+    if (!draggedTask) return;
+    dragOverlayX.setValue(pointerX - screenOrigin.current.x - dragGrabOffset.current.x);
+    dragOverlayY.setValue(pointerY - screenOrigin.current.y - dragGrabOffset.current.y);
+    const { x, width } = boardViewport.current;
+    const edgeSize = 48;
+    const direction = pointerX < x + edgeSize
+      ? -1
+      : pointerX > x + width - edgeSize
+        ? 1
+        : 0;
+
+    if (direction === autoScrollDirection.current) return;
+    stopAutoScroll();
+    if (!direction) return;
+
+    autoScrollDirection.current = direction;
+    autoScrollInterval.current = setInterval(() => {
+      const maxOffset = Math.max(0, boardContentWidth.current - boardViewport.current.width);
+      const nextOffset = Math.max(
+        0,
+        Math.min(maxOffset, boardScrollX.current + autoScrollDirection.current * 16),
+      );
+      if (nextOffset === boardScrollX.current) {
+        stopAutoScroll();
+        return;
+      }
+      boardScrollX.current = nextOffset;
+      boardScrollRef.current?.scrollTo({ x: nextOffset, animated: false });
+    }, 30);
+  }, [draggedTask, dragOverlayX, dragOverlayY, stopAutoScroll]);
+
   const finishDrag = useCallback((task, distance) => {
-    if (Math.abs(distance) < 50) return;
+    stopAutoScroll();
+    setDraggedTask(null);
     const currentIndex = columns.findIndex((column) => column.key === task.status);
-    const direction = distance < 0 ? 1 : -1;
-    const steps = Math.max(1, Math.round(Math.abs(distance) / 220));
-    const nextColumn = columns[currentIndex + (direction * steps)];
+    const scrollDistance = boardScrollX.current - dragStartScrollX.current;
+    const columnOffset = Math.round((distance + scrollDistance) / TASK_COLUMN_STEP);
+    const nextIndex = Math.max(0, Math.min(columns.length - 1, currentIndex + columnOffset));
+    const nextColumn = columns[nextIndex];
     if (!nextColumn || nextColumn.key === task.status) return;
     updateTask(task, () => projetosApi.moverTarefa(task.id, user.id, nextColumn.key));
-  }, [updateTask, user?.id]);
+  }, [stopAutoScroll, updateTask, user?.id]);
 
   const claimTask = useCallback((task) => {
     updateTask(task, () => projetosApi.assumirTarefa(task.id, user.id));
@@ -274,7 +475,15 @@ export default function Tarefas() {
   }, [loadTasks]));
 
   return (
-    <View style={[styles.screen, { backgroundColor: theme.background }]}>
+    <View
+      ref={screenRef}
+      onLayout={() => {
+        screenRef.current?.measureInWindow((x, y) => {
+          screenOrigin.current = { x, y };
+        });
+      }}
+      style={[styles.screen, { backgroundColor: theme.background }]}
+    >
       <View style={styles.titleRow}>
         <Text style={[styles.projectTitle, { color: theme.primaryDark }]} numberOfLines={1}>{tituloProjeto}</Text>
         <Pressable
@@ -303,10 +512,21 @@ export default function Tarefas() {
         </View>
       ) : (
         <ScrollView
+          ref={boardScrollRef}
           horizontal
           style={styles.boardScroll}
           showsHorizontalScrollIndicator={false}
           contentContainerStyle={styles.board}
+          onScroll={(event) => { boardScrollX.current = event.nativeEvent.contentOffset.x; }}
+          onContentSizeChange={(width) => { boardContentWidth.current = width; }}
+          onLayout={(event) => {
+            boardViewport.current.width = event.nativeEvent.layout.width;
+            boardScrollRef.current?.measureInWindow((x) => {
+              boardViewport.current.x = x;
+            });
+          }}
+          scrollEnabled={!dragArmedTaskId}
+          scrollEventThrottle={16}
         >
           {columns.map((column) => {
             const columnTasks = tasks.filter((task) => task.status === column.key);
@@ -322,7 +542,12 @@ export default function Tarefas() {
                   <Text style={[styles.columnTitle, { color: theme.text }]}>{column.title}</Text>
                   <Text style={[styles.columnCount, { color: theme.mutedText }]}>{columnTasks.length}</Text>
                 </View>
-                <ScrollView nestedScrollEnabled style={styles.columnScroll} showsVerticalScrollIndicator={false}>
+                <ScrollView
+                  nestedScrollEnabled
+                  scrollEnabled={!dragArmedTaskId}
+                  style={styles.columnScroll}
+                  showsVerticalScrollIndicator={false}
+                >
                   {columnTasks.length === 0 ? (
                     <Text style={[styles.emptyColumn, { color: theme.mutedText }]}>Nenhuma tarefa</Text>
                   ) : columnTasks.map((task) => (
@@ -333,13 +558,17 @@ export default function Tarefas() {
                       canMove={isLeader || Number(task.responsavel_id) === Number(user?.id)}
                       canManage={isLeader || Number(task.responsavel_id) === Number(user?.id)}
                       isResponsible={Number(task.responsavel_id) === Number(user?.id)}
-                      onStartDrag={() => {}}
+                      onStartDrag={startTaskDrag}
+                      onHoldReady={setDragArmedTaskId}
+                      onDragMove={updateAutoScroll}
                       onFinishDrag={finishDrag}
+                      onCancelDrag={clearDragOverlay}
                       onOpenMenu={(taskToManage) => {
                         setTaskActionMode('actions');
                         setSelectedTask(taskToManage);
                       }}
                       onClaim={claimTask}
+                      isHidden={draggedTask?.id === task.id}
                     />
                   ))}
                 </ScrollView>
@@ -349,6 +578,48 @@ export default function Tarefas() {
         </ScrollView>
       )}
       {actionTaskId ? <View style={styles.actionLoading}><ActivityIndicator color={theme.primary} /></View> : null}
+      {draggedTask ? (
+        <Animated.View
+          pointerEvents="none"
+          style={[
+            styles.taskCard,
+            styles.dragOverlay,
+            {
+              backgroundColor: theme.surface,
+              borderColor: theme.primary,
+              height: draggedTask.overlayHeight,
+              width: draggedTask.overlayWidth,
+              transform: [{ translateX: dragOverlayX }, { translateY: dragOverlayY }, { scale: 1.035 }],
+            },
+          ]}
+        >
+          {draggedTask.overlayCanManage || draggedTask.overlayIsResponsible ? (
+            <View style={styles.menuButton}>
+              <Text style={[styles.menuText, { color: theme.primary }]}>:</Text>
+            </View>
+          ) : null}
+          <Text style={[styles.taskTitle, { color: theme.text }]}>{draggedTask.titulo}</Text>
+          {draggedTask.descricao ? (
+            <Text style={[styles.taskDescription, { color: theme.mutedText }]}>{draggedTask.descricao}</Text>
+          ) : null}
+          <Text style={[styles.taskDetail, { color: theme.mutedText }]}>
+            Responsável: {draggedTask.responsavel_nome || 'Não definido'}
+          </Text>
+          <Text style={[styles.taskDetail, { color: theme.mutedText }]}>
+            Prioridade: {priorityLabels[draggedTask.prioridade] || draggedTask.prioridade || 'Não definida'}
+          </Text>
+          {draggedTask.data_vencimento ? (
+            <Text style={[styles.taskDetail, { color: theme.mutedText }]}>
+              Vencimento: {new Date(draggedTask.data_vencimento).toLocaleDateString('pt-BR')}
+            </Text>
+          ) : null}
+          {!draggedTask.responsavel_id ? (
+            <View style={[styles.tasksButton, { borderColor: theme.primary }]}>
+              <Text style={[styles.tasksButtonText, { color: theme.primary }]}>Pegar tarefa</Text>
+            </View>
+          ) : null}
+        </Animated.View>
+      ) : null}
       <Modal visible={Boolean(selectedTask)} transparent animationType="fade" onRequestClose={() => setSelectedTask(null)}>
         <View style={styles.modalBackdrop}>
           <View style={[styles.modalCard, { backgroundColor: theme.surface }]}>
