@@ -1,14 +1,14 @@
 import { API_BASE_URL, API_TIMEOUT } from '../config/api';
 
-export async function login(email, senha) {
+async function postAuthRequest(path, payload, fallbackMessage) {
   const controller = new AbortController();
   const timer = setTimeout(() => controller.abort(), API_TIMEOUT);
 
   try {
-    const response = await fetch(`${API_BASE_URL}/api/login`, {
+    const response = await fetch(`${API_BASE_URL}${path}`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ email, senha }),
+      body: JSON.stringify(payload),
       signal: controller.signal,
     });
 
@@ -18,7 +18,7 @@ export async function login(email, senha) {
       : null;
 
     if (!response.ok) {
-      throw new Error(data?.message || 'Não foi possível realizar o login.');
+      throw new Error(data?.message || fallbackMessage);
     }
 
     return data;
@@ -31,4 +31,20 @@ export async function login(email, senha) {
   } finally {
     clearTimeout(timer);
   }
+}
+
+export function login(email, senha) {
+  return postAuthRequest(
+    '/api/login',
+    { email, senha },
+    'Não foi possível realizar o login.',
+  );
+}
+
+export function registrarUsuario(nome, email, senha) {
+  return postAuthRequest(
+    '/api/usuarios',
+    { nome, email, senha },
+    'Não foi possível realizar o cadastro.',
+  );
 }

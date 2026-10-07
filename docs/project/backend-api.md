@@ -10,6 +10,14 @@
 - Ao criar ou alterar endpoint, atualize o cliente correspondente e documente impacto.
 - Verifique autorização no backend; não confie apenas em controles visuais do mobile.
 
+## Cadastro de usuários
+
+- `POST /api/usuarios` recebe nome, e-mail e senha, valida os dados no servidor e cria a conta na tabela `usuarios`.
+- O e-mail é normalizado para minúsculas; nome e e-mail respeitam os limites do schema, e o e-mail deve ser válido.
+- A senha mantém a política do formulário (mínimo de 6 caracteres e uma letra maiúscula), tem limite de 72 bytes para bcrypt, é armazenada como hash bcrypt e nunca é retornada.
+- A rota responde `201` ao cadastrar, `409` quando o e-mail já existe, `400` para dados inválidos e `500` em falha inesperada.
+- O cadastro não cria sessão: o usuário segue para o login após a criação da conta.
+
 ## Candidaturas e análise de perfil
 
 - `POST /api/candidaturas` cria uma candidatura pendente e gera uma notificação do tipo `application` para o criador do projeto.

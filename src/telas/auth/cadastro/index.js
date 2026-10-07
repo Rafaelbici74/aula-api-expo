@@ -1,7 +1,8 @@
-import { View, Text, TextInput, Pressable, Alert } from 'react-native';
+import { View, Text, TextInput, Pressable, Alert, ActivityIndicator } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { useState } from 'react';
 
+import { registrarUsuario } from '../../../services/authApi';
 import styles from '../../../stylesGlobal';
 import { useTheme } from '../../../theme/ThemeContext';
 
@@ -14,8 +15,11 @@ export default function CadUsuario() {
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
   const [passwordError, setPasswordError] = useState('');
+  const [registerError, setRegisterError] = useState('');
+  const [submitting, setSubmitting] = useState(false);
 
-  function handleRegister() {
+  async function handleRegister() {
+    if (submitting) return;
     if (!name.trim() || !email.trim() || !password || !confirmPassword) {
       Alert.alert('Preencha todos os campos');
       return;
@@ -31,17 +35,26 @@ export default function CadUsuario() {
       return;
     }
 
-    if (!email.trim().includes('@') || !email.trim().includes('.')) {
-      Alert.alert('por favor digite um email valido')
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email.trim())) {
+      Alert.alert('Informe um e-mail válido');
       return;
-
     }
 
     setPasswordError('');
-    Alert.alert('Cadastro realizado', 'Bem-vindo ' + name);
-    navigation.navigate('myTab');
-
-    
+    setRegisterError('');
+    setSubmitting(true);
+    try {
+      await registrarUsuario(name.trim(), email.trim().toLowerCase(), password);
+      Alert.alert(
+        'Cadastro realizado',
+        'Sua conta foi criada. Faça login para continuar.',
+        [{ text: 'Fazer login', onPress: () => navigation.replace('login') }],
+      );
+    } catch (error) {
+      setRegisterError(error.message || 'Não foi possível realizar o cadastro.');
+    } finally {
+      setSubmitting(false);
+    }
   }
 
   return (
@@ -55,6 +68,8 @@ export default function CadUsuario() {
           placeholderTextColor={theme.placeholder}
           value={name}
           onChangeText={setName}
+          maxLength={100}
+          editable={!submitting}
         />
 
         <TextInput
@@ -65,6 +80,8 @@ export default function CadUsuario() {
           keyboardType="email-address"
           value={email}
           onChangeText={setEmail}
+          maxLength={150}
+          editable={!submitting}
         />
 
         <TextInput
@@ -73,6 +90,7 @@ export default function CadUsuario() {
           placeholderTextColor={theme.placeholder}
           secureTextEntry
           value={password}
+          editable={!submitting}
           onChangeText={(text) => {
             setPassword(text);
             if (passwordError) setPasswordError('');
@@ -85,6 +103,7 @@ export default function CadUsuario() {
           placeholderTextColor={theme.placeholder}
           secureTextEntry
           value={confirmPassword}
+          editable={!submitting}
           onChangeText={(text) => {
             setConfirmPassword(text);
             if (passwordError) setPasswordError('');
@@ -98,9 +117,26 @@ export default function CadUsuario() {
           </Text>
         ) : null}
 
-        {/* Envia o cadastro depois que as validações são aprovadas. */}
-        <Pressable style={[styles.primaryButton, { backgroundColor: theme.primary }]} onPress={handleRegister}>
-          <Text style={styles.primaryButtonText}>Cadastrar</Text>
+        {registerError ? (
+          <Text style={{ color: theme.error, fontSize: 12, marginBottom: 12 }}>
+            {registerError}
+          </Text>
+        ) : null}
+
+        <Pressable
+          style={[
+            styles.primaryButton,
+            { backgroundColor: theme.primary },
+            submitting && { opacity: 0.6 },
+          ]}
+          onPress={handleRegister}
+          disabled={submitting}
+        >
+          {submitting ? (
+            <ActivityIndicator color="#fff" />
+          ) : (
+            <Text style={styles.primaryButtonText}>Cadastrar</Text>
+          )}
         </Pressable>
 
         {/* Retorna ao login sem empilhar uma nova tela. */}

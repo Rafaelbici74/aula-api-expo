@@ -229,7 +229,7 @@ O sistema possui:
 - validação de credenciais pela API;
 - armazenamento do usuário no `AuthContext`.
 
-O backend utiliza `bcryptjs` para senhas e mantém estruturas relacionadas a recuperação e revogação de tokens no banco.
+O cadastro cria a conta pela API, que armazena novas senhas como hash bcrypt. Após o sucesso, o usuário deve entrar pela tela de login; o cadastro não inicia uma sessão.
 
 ### Perfil
 
@@ -388,6 +388,7 @@ As rotas principais implementadas em `server.js` são:
 
 ```text
 GET  /api/health
+POST /api/usuarios
 POST /api/login
 ```
 

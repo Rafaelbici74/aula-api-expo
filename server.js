@@ -5,7 +5,7 @@ require('dotenv').config();
 const express = require('express');
 const cors = require('cors');
 const db = require('./src/dataBase/connection');
-const { autenticar } = require('./src/services/authService');
+const { autenticar, cadastrarUsuario } = require('./src/services/authService');
 const {
   buscarPerfil,
   atualizarBio,
@@ -153,6 +153,62 @@ app.put('/api/usuarios/:id/localizacao', async (req, res) => {
   } catch (error) {
     console.error('Erro ao atualizar localização:', error);
     return res.status(500).json({ sucesso: false, message: 'Não foi possível salvar a localização.' });
+  }
+});
+
+app.post('/api/usuarios', async (req, res) => {
+  const nome = typeof req.body?.nome === 'string' ? req.body.nome.trim() : '';
+  const email = typeof req.body?.email === 'string' ? req.body.email.trim().toLowerCase() : '';
+  const senha = typeof req.body?.senha === 'string' ? req.body.senha : '';
+
+  if (!nome || nome.length > 100) {
+    return res.status(400).json({
+      sucesso: false,
+      message: 'Informe um nome com até 100 caracteres.',
+    });
+  }
+
+  if (!email || email.length > 150 || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+    return res.status(400).json({
+      sucesso: false,
+      message: 'Informe um e-mail válido com até 150 caracteres.',
+    });
+  }
+
+  if (senha.length < 6 || !/[A-Z]/.test(senha)) {
+    return res.status(400).json({
+      sucesso: false,
+      message: 'A senha deve ter pelo menos 6 caracteres e conter uma letra maiúscula.',
+    });
+  }
+
+  if (Buffer.byteLength(senha, 'utf8') > 72) {
+    return res.status(400).json({
+      sucesso: false,
+      message: 'A senha excede o limite suportado. Use até 72 bytes.',
+    });
+  }
+
+  try {
+    const usuario = await cadastrarUsuario(nome, email, senha);
+    return res.status(201).json({
+      sucesso: true,
+      message: 'Cadastro realizado com sucesso.',
+      usuario,
+    });
+  } catch (error) {
+    if (error?.code === 'ER_DUP_ENTRY') {
+      return res.status(409).json({
+        sucesso: false,
+        message: 'Este e-mail já está cadastrado.',
+      });
+    }
+
+    console.error('Erro ao cadastrar usuário:', error);
+    return res.status(500).json({
+      sucesso: false,
+      message: 'Não foi possível realizar o cadastro.',
+    });
   }
 });
 
