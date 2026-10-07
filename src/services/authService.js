@@ -34,4 +34,18 @@ async function autenticar(email, senha) {
   };
 }
 
-module.exports = { autenticar };
+async function cadastrarUsuario(nome, email, senha) {
+  const senhaHash = await bcrypt.hash(senha, 10);
+  const [result] = await db.query(
+    'INSERT INTO usuarios (nome, email, senha, senha_definida) VALUES (?, ?, ?, 1)',
+    [nome, email, senhaHash],
+  );
+
+  return {
+    id: result.insertId,
+    nome,
+    email,
+  };
+}
+
+module.exports = { autenticar, cadastrarUsuario };
