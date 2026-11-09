@@ -12,4 +12,5 @@
 - Os limites atuais de recuperação são por IP e em memória por instância; produção com múltiplas instâncias deve usar rate limiting compartilhado e confiável.
 - O envio SMTP pelo Nodemailer ocorre em segundo plano, serializado por usuário e em memória no processo da API; uma interrupção do processo pode perder o envio pendente, portanto produção com requisitos de entrega deve adotar fila persistente.
 - Considere exposição de IDs, enumeração de usuários, CORS, erros e integrações externas em cada alteração.
+- O plugin `plugins/withAndroidCleartextTraffic.js` permite conexões HTTP sem criptografia no app para desenvolvimento local no emulador. Remova-o da configuração de produção e sirva a API por HTTPS.
 - Alterações de segurança exigem validação específica e não devem ser reduzidas a controles de interface.
