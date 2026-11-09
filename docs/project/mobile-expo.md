@@ -7,3 +7,6 @@
 - Reutilize React Navigation e os stacks/tabs existentes.
 - Use componentes e APIs já instalados antes de propor dependências novas.
 - Mantenha estados de loading, erro, vazio e sucesso em telas que fazem requisições.
+- A orientação padrão é retrato. A rota Tarefas acompanha a orientação física do dispositivo em Android e iPhone enquanto estiver em foco e restaura retrato ao sair.
+- `expo-screen-orientation` controla a orientação em tempo de execução; a configuração nativa permite ambos os sentidos. No iPad, a multitarefa permanece habilitada e o sistema pode permitir rotação fora da tela Tarefas.
+- Em Tarefas, calcule a altura das colunas a partir do espaço real do quadro e mantenha os `ScrollView` internos limitados para permitir rolagem vertical em paisagem. Cancele o gesto e libere o scroll ao mudar a orientação ou sair da rota.

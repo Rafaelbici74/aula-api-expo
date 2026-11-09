@@ -1,11 +1,17 @@
+import { useEffect } from 'react';
 import { StatusBar } from 'expo-status-bar';
 import {
   DarkTheme,
   DefaultTheme,
   NavigationContainer,
 } from '@react-navigation/native';
+import * as ScreenOrientation from 'expo-screen-orientation';
 
 import RootStack from './src/routes/rootStack';
+import {
+  canFollowDeviceOrientation,
+  lockScreenOrientation,
+} from './src/services/screenOrientation';
 import { ThemeProvider, useTheme } from './src/theme/ThemeContext';
 import { AuthProvider } from './src/context/AuthContext';
 
@@ -23,6 +29,15 @@ export default function App() {
 function ThemedApp() {
   const { mode, theme, isReady } = useTheme();
   const navigationTheme = mode === 'dark' ? DarkTheme : DefaultTheme;
+
+  useEffect(() => {
+    if (!canFollowDeviceOrientation) return;
+
+    lockScreenOrientation(ScreenOrientation.OrientationLock.PORTRAIT)
+      .catch((error) => {
+        console.error('Não foi possível manter o aplicativo em retrato.', error);
+      });
+  }, []);
 
   if (!isReady) {
     return null;

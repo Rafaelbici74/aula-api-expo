@@ -48,3 +48,19 @@ export function registrarUsuario(nome, email, senha) {
     'Não foi possível realizar o cadastro.',
   );
 }
+
+export function solicitarCodigoRecuperacao(email) {
+  return postAuthRequest(
+    '/api/recuperacao-senha/solicitar',
+    { email },
+    'Não foi possível solicitar o código de recuperação.',
+  );
+}
+
+export function redefinirSenha(email, codigo, novaSenha) {
+  return postAuthRequest(
+    '/api/recuperacao-senha/confirmar',
+    { email, codigo, nova_senha: novaSenha },
+    'Não foi possível redefinir a senha.',
+  );
+}

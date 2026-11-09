@@ -5,4 +5,5 @@
 - Use apenas scripts e ferramentas já presentes no projeto.
 - Para UI, revise layout, overflow, rolagem, Safe Area, teclado, temas, estados e áreas de toque.
 - Para backend, teste sucesso, entradas inválidas, autorização, não encontrado, conflito e erro interno.
+- No fluxo de recuperação, valide resposta genérica para e-mail cadastrado/inexistente, código incorreto, expirado e reutilizado, limite de tentativas, falha no SMTP, armazenamento do HMAC e nova senha com bcrypt.
 - Nunca informe que um teste passou sem executá-lo; registre comandos e limitações reais.

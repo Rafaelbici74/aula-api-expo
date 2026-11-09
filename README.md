@@ -123,6 +123,13 @@ BD_USUARIO=seu_usuario
 BD_SENHA=sua_senha
 BD_BANCO=seu_banco
 PORT=3333
+SMTP_HOST=
+SMTP_PORT=
+SMTP_SECURE=
+SMTP_USER=
+SMTP_PASSWORD=
+SMTP_FROM=
+RESET_CODE_SECRET=gere_um_segredo_aleatorio_com_pelo_menos_32_bytes
 ```
 
 Também podem ser utilizados os nomes alternativos definidos em `src/dataBase/connection.js`:
@@ -134,6 +141,14 @@ DB_USER=seu_usuario
 DB_PASSWORD=sua_senha
 DB_NAME=seu_banco
 ```
+
+Configure o remetente e os parâmetros conforme o provedor SMTP. Gere `RESET_CODE_SECRET` com:
+
+```bash
+node -e "console.log(require('node:crypto').randomBytes(32).toString('hex'))"
+```
+
+Mantenha essas configurações somente no ambiente do backend; nunca use o prefixo `EXPO_PUBLIC_` para segredos. Reinicie o processo da API após alterar o `.env`.
 
 Nunca versione o arquivo `.env` nem exponha credenciais.
 
@@ -230,6 +245,8 @@ O sistema possui:
 - armazenamento do usuário no `AuthContext`.
 
 O cadastro cria a conta pela API, que armazena novas senhas como hash bcrypt. Após o sucesso, o usuário deve entrar pela tela de login; o cadastro não inicia uma sessão.
+
+A recuperação de senha envia um código de uso único por e-mail usando SMTP com Nodemailer. Configure `SMTP_HOST`, `SMTP_PORT`, `SMTP_SECURE`, `SMTP_USER`, `SMTP_PASSWORD`, `SMTP_FROM` e `RESET_CODE_SECRET` somente no ambiente do backend. Use os parâmetros de conexão fornecidos pelo seu provedor SMTP e um remetente autorizado. O segredo de recuperação deve ser aleatório e ter pelo menos 32 bytes; gere-o com `node -e "console.log(require('node:crypto').randomBytes(32).toString('hex'))"`. Nunca configure credenciais SMTP ou o segredo no aplicativo mobile. O código expira em 15 minutos e só pode ser usado uma vez.
 
 ### Perfil
 
@@ -390,6 +407,8 @@ As rotas principais implementadas em `server.js` são:
 GET  /api/health
 POST /api/usuarios
 POST /api/login
+POST /api/recuperacao-senha/solicitar
+POST /api/recuperacao-senha/confirmar
 ```
 
 ### Perfil

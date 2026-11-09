@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
+import * as ScreenOrientation from 'expo-screen-orientation';
 import {
   ActivityIndicator,
   Alert,
@@ -14,10 +15,14 @@ import {
   View,
   useWindowDimensions,
 } from 'react-native';
-import { useFocusEffect, useRoute } from '@react-navigation/native';
+import { useFocusEffect, useIsFocused, useRoute } from '@react-navigation/native';
 
 import { useAuth } from '../../../context/AuthContext';
 import { projetosApi } from '../../../services/projetosApi';
+import {
+  canFollowDeviceOrientation,
+  lockScreenOrientation,
+} from '../../../services/screenOrientation';
 import { useTheme } from '../../../theme/ThemeContext';
 import styles from './styles';
 
@@ -40,6 +45,8 @@ const TASK_COLUMN_STEP = 272;
 function TaskCard({
   task,
   theme,
+  isScreenFocused,
+  isLandscape,
   isResponsible,
   canMove,
   canManage,
@@ -58,6 +65,7 @@ function TaskCard({
   const touchActive = useRef(false);
   const holdReady = useRef(false);
   const touchOrigin = useRef(null);
+  const gestureContext = useRef({ isScreenFocused, isLandscape });
   const cardRef = useRef(null);
   const taskRef = useRef(task);
   const canMoveRef = useRef(canMove);
@@ -96,6 +104,18 @@ function TaskCard({
     setHolding(false);
     if (wasReady) onHoldReadyRef.current(null);
   }
+
+  useEffect(() => {
+    if (
+      gestureContext.current.isScreenFocused === isScreenFocused
+      && gestureContext.current.isLandscape === isLandscape
+    ) return;
+
+    gestureContext.current = { isScreenFocused, isLandscape };
+    dragStarted.current = false;
+    resetHold();
+    onCancelDragRef.current();
+  }, [isLandscape, isScreenFocused]);
 
   function beginHold(event) {
     if (!canMoveRef.current) return;
@@ -239,9 +259,12 @@ function TaskCard({
 
 export default function Tarefas() {
   const route = useRoute();
+  const isScreenFocused = useIsFocused();
   const { user } = useAuth();
   const { theme } = useTheme();
-  const { height } = useWindowDimensions();
+  const { height, width } = useWindowDimensions();
+  const isLandscape = width > height;
+  const [boardHeight, setBoardHeight] = useState(Math.max(0, height - 155));
   const [tasks, setTasks] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
@@ -271,8 +294,10 @@ export default function Tarefas() {
   const dragStartScrollX = useRef(0);
   const autoScrollDirection = useRef(0);
   const autoScrollInterval = useRef(null);
+  const previousGestureContext = useRef({ isLandscape, isScreenFocused });
   const projetoId = route.params?.projetoId;
   const tituloProjeto = route.params?.tituloProjeto || 'Projeto';
+  const columnHeight = Math.max(0, boardHeight - 40);
 
   const loadTasks = useCallback(async () => {
     if (!projetoId || !user?.id) {
@@ -314,12 +339,23 @@ export default function Tarefas() {
     autoScrollDirection.current = 0;
   }, []);
 
-  useEffect(() => () => stopAutoScroll(), [stopAutoScroll]);
-
   const clearDragOverlay = useCallback(() => {
     setDraggedTask(null);
     stopAutoScroll();
   }, [stopAutoScroll]);
+
+  useEffect(() => () => stopAutoScroll(), [stopAutoScroll]);
+
+  useEffect(() => {
+    if (
+      previousGestureContext.current.isLandscape === isLandscape
+      && previousGestureContext.current.isScreenFocused === isScreenFocused
+    ) return;
+
+    previousGestureContext.current = { isLandscape, isScreenFocused };
+    setDragArmedTaskId(null);
+    clearDragOverlay();
+  }, [clearDragOverlay, isLandscape, isScreenFocused]);
 
   const startTaskDrag = useCallback((task, bounds, pointer) => {
     dragStartScrollX.current = boardScrollX.current;
@@ -471,7 +507,23 @@ export default function Tarefas() {
   }, [updateTask, user?.id]);
 
   useFocusEffect(useCallback(() => {
+    if (canFollowDeviceOrientation) {
+      lockScreenOrientation(ScreenOrientation.OrientationLock.DEFAULT)
+        .catch((error) => {
+          console.error('Não foi possível acompanhar a orientação do dispositivo.', error);
+        });
+    }
+
     loadTasks();
+
+    if (!canFollowDeviceOrientation) return undefined;
+
+    return () => {
+      lockScreenOrientation(ScreenOrientation.OrientationLock.PORTRAIT)
+        .catch((error) => {
+          console.error('Não foi possível restaurar a orientação retrato.', error);
+        });
+    };
   }, [loadTasks]));
 
   return (
@@ -520,6 +572,7 @@ export default function Tarefas() {
           onScroll={(event) => { boardScrollX.current = event.nativeEvent.contentOffset.x; }}
           onContentSizeChange={(width) => { boardContentWidth.current = width; }}
           onLayout={(event) => {
+            setBoardHeight(event.nativeEvent.layout.height);
             boardViewport.current.width = event.nativeEvent.layout.width;
             boardScrollRef.current?.measureInWindow((x) => {
               boardViewport.current.x = x;
@@ -535,7 +588,11 @@ export default function Tarefas() {
                 key={column.key}
                 style={[
                   styles.column,
-                  { backgroundColor: theme.inputBackground, borderColor: theme.border, height: Math.max(300, height - 155) },
+                  {
+                    backgroundColor: theme.inputBackground,
+                    borderColor: theme.border,
+                    height: columnHeight,
+                  },
                 ]}
               >
                 <View style={styles.columnHeader}>
@@ -555,6 +612,8 @@ export default function Tarefas() {
                       key={String(task.id)}
                       task={task}
                       theme={theme}
+                      isScreenFocused={isScreenFocused}
+                      isLandscape={isLandscape}
                       canMove={isLeader || Number(task.responsavel_id) === Number(user?.id)}
                       canManage={isLeader || Number(task.responsavel_id) === Number(user?.id)}
                       isResponsible={Number(task.responsavel_id) === Number(user?.id)}

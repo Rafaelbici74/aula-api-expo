@@ -18,6 +18,17 @@
 - A rota responde `201` ao cadastrar, `409` quando o e-mail já existe, `400` para dados inválidos e `500` em falha inesperada.
 - O cadastro não cria sessão: o usuário segue para o login após a criação da conta.
 
+## Recuperação de senha
+
+- `POST /api/recuperacao-senha/solicitar` recebe o e-mail e retorna `202` com resposta genérica para evitar revelar se existe uma conta; quando encontrada, agenda o envio de código de 8 dígitos por SMTP com Nodemailer após a resposta.
+- O código expira em 15 minutos, é armazenado apenas como HMAC-SHA256 em `usuarios.reset_token` e seu segredo deve ter pelo menos 32 bytes em `RESET_CODE_SECRET`.
+- O endpoint de solicitação exige `SMTP_HOST`, `SMTP_PORT`, `SMTP_SECURE`, `SMTP_USER`, `SMTP_PASSWORD`, `SMTP_FROM` e `RESET_CODE_SECRET`; falhas de entrega invalidam o código recém-criado e são registradas sem expor o endereço, o código ou credenciais. O envio é assíncrono, serializado por usuário no processo atual, e não possui fila persistente.
+- `POST /api/recuperacao-senha/confirmar` recebe e-mail, código e nova senha; valida código, expiração e uso único antes de salvar a senha com bcrypt.
+- A senha nova segue a política do cadastro: mínimo de 6 caracteres, uma letra maiúscula e limite de 72 bytes. A confirmação da senha é validada no mobile.
+- Solicitações são limitadas a 3 por IP e confirmações a 5 por IP em 15 minutos. Esses limites são em memória por instância e reiniciam quando o processo reinicia.
+- A solicitação responde `400` para formato inválido, `429` por excesso de solicitações, `503` quando o SMTP/segredo não está configurado, `202` com mensagem genérica e `500` em erro de banco. A confirmação responde `200` no sucesso, `400` para código inválido/expirado/utilizado ou dados inválidos, `429` por excesso de tentativas e `503` quando o segredo está ausente.
+- O fluxo usa as colunas de recuperação existentes em `usuarios` e não requer alteração de schema.
+
 ## Candidaturas e análise de perfil
 
 - `POST /api/candidaturas` cria uma candidatura pendente e gera uma notificação do tipo `application` para o criador do projeto.
