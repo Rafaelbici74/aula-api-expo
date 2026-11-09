@@ -204,6 +204,10 @@ Nesta referência, `NULL`/`NOT NULL` descreve a nulabilidade; defaults são expl
 - Índices: PRIMARY (`id`); UNIQUE `email` (`email`); UNIQUE `uq_usuarios_github_user_id` (`github_user_id`).
 - Não foram encontrados FKs definidos nesta tabela.
 
+#### Uso dos campos de recuperação
+
+As colunas de recuperação de `usuarios` e suas constraints foram consultadas novamente no MySQL em 2026-10-07. O fluxo de redefinição não adiciona colunas. `reset_token` armazena o HMAC-SHA256 do código temporário; `reset_expira_em` recebe a expiração em UTC; `reset_utilizado` controla o uso único. `reset_codigo` permanece NULL para não manter o código em texto puro. Após redefinir ou falhar o envio, os dados temporários são invalidados.
+
 ### `vagas_projeto`
 
 - `id`: `int(11)`, NOT NULL, AUTO_INCREMENT.

@@ -8,4 +8,5 @@
 - Preserve o padrão de modais, alertas e confirmações já usado pelo projeto.
 - No cadastro, mostre progresso durante a requisição e só confirme a criação após resposta bem-sucedida da API; apresente erros de validação, conexão ou e-mail duplicado sem limpar os campos.
 - Após o cadastro bem-sucedido, encaminhe o usuário ao login; não simule autenticação local.
+- Na recuperação de senha, apresente as etapas de solicitação do código e redefinição, com loading, erro, resposta genérica para e-mail existente ou inexistente, validação do código e confirmação da nova senha. O código enviado por e-mail expira em 15 minutos e só pode ser usado uma vez.
 - No Kanban, o usuário deve segurar uma tarefa que pode mover por 2,5 segundos; somente uma barra animada indica a contagem. Após esse tempo, uma cópia visual da tarefa acompanha o dedo acima das colunas e listas, e o quadro rola horizontalmente ao alcançar suas bordas. Antes de completar a contagem, movimentos cancelam o arraste e permanecem disponíveis para rolagem normal.

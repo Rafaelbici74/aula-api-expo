@@ -3,7 +3,7 @@
     "name": "aula-api-expo",
     "slug": "aula-api-expo",
     "version": "1.0.0",
-    "orientation": "portrait",
+    "orientation": "default",
     "icon": "./assets/icon.png",
     "userInterfaceStyle": "light",
     "newArchEnabled": true,
@@ -26,7 +26,8 @@
       "favicon": "./assets/favicon.png"
     },
     "plugins": [
-      "expo-font"
+      "expo-font",
+      "./plugins/withAndroidCleartextTraffic"
     ]
   }
 }

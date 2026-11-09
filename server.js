@@ -5,7 +5,18 @@ require('dotenv').config();
 const express = require('express');
 const cors = require('cors');
 const db = require('./src/dataBase/connection');
-const { autenticar, cadastrarUsuario } = require('./src/services/authService');
+const {
+  autenticar,
+  cadastrarUsuario,
+  criarCodigoRecuperacao,
+  invalidarCodigoRecuperacao,
+  isRecoveryConfigured,
+  redefinirSenha,
+} = require('./src/services/authService');
+const {
+  enviarCodigoRecuperacao,
+  isEmailServiceConfigured,
+} = require('./src/services/emailService');
 const {
   buscarPerfil,
   atualizarBio,
@@ -15,6 +26,68 @@ const {
 // Cria a aplicação Express.
 const app = express();
 const PORT = process.env.PORT || 3333;
+const recoveryRateLimits = new Map();
+const recoveryEmailQueues = new Map();
+const RECOVERY_RATE_LIMIT_WINDOW_MS = 15 * 60 * 1000;
+const RECOVERY_RATE_LIMIT_MAX_ENTRIES = 10000;
+
+function consumeRecoveryRateLimit(key, limit) {
+  const now = Date.now();
+  let entry = recoveryRateLimits.get(key);
+
+  if (!entry || entry.expiresAt <= now) {
+    entry = { count: 0, expiresAt: now + RECOVERY_RATE_LIMIT_WINDOW_MS };
+  }
+
+  if (entry.count >= limit) {
+    return {
+      allowed: false,
+      retryAfter: Math.max(1, Math.ceil((entry.expiresAt - now) / 1000)),
+    };
+  }
+
+  if (recoveryRateLimits.size >= RECOVERY_RATE_LIMIT_MAX_ENTRIES && !recoveryRateLimits.has(key)) {
+    for (const [existingKey, existingEntry] of recoveryRateLimits) {
+      if (existingEntry.expiresAt <= now) recoveryRateLimits.delete(existingKey);
+    }
+    if (recoveryRateLimits.size >= RECOVERY_RATE_LIMIT_MAX_ENTRIES) {
+      const oldestKey = recoveryRateLimits.keys().next().value;
+      if (oldestKey) recoveryRateLimits.delete(oldestKey);
+    }
+  }
+
+  entry.count += 1;
+  recoveryRateLimits.set(key, entry);
+  return { allowed: true, retryAfter: 0 };
+}
+
+function queueRecoveryEmail(recovery) {
+  const queueKey = String(recovery.usuarioId);
+  const previousTask = recoveryEmailQueues.get(queueKey) || Promise.resolve();
+  const task = previousTask.catch(() => undefined).then(async () => {
+    try {
+      await enviarCodigoRecuperacao(recovery.email, recovery.nome, recovery.codigo);
+    } catch (emailError) {
+      try {
+        await invalidarCodigoRecuperacao(recovery.usuarioId, recovery.tokenHash);
+      } catch {
+        console.error('Não foi possível invalidar o código após falha no envio.');
+      }
+      console.error(`Falha no envio de recuperação via SMTP (${emailError.code || 'provider error'}).`);
+    }
+  });
+
+  recoveryEmailQueues.set(queueKey, task);
+  task.then(
+    () => {
+      if (recoveryEmailQueues.get(queueKey) === task) recoveryEmailQueues.delete(queueKey);
+    },
+    () => {
+      if (recoveryEmailQueues.get(queueKey) === task) recoveryEmailQueues.delete(queueKey);
+      console.error('Falha inesperada na fila local de e-mails de recuperação.');
+    },
+  );
+}
 
 // Habilita CORS para que o app mobile possa acessar a API.
 app.use(cors());
@@ -244,6 +317,108 @@ app.post('/api/login', async (req, res) => {
     return res.status(500).json({
       sucesso: false,
       message: 'Não foi possível realizar o login.',
+    });
+  }
+});
+
+app.post('/api/recuperacao-senha/solicitar', async (req, res) => {
+  const email = typeof req.body?.email === 'string' ? req.body.email.trim().toLowerCase() : '';
+  if (!email || email.length > 150 || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+    return res.status(400).json({
+      sucesso: false,
+      message: 'Informe um e-mail válido.',
+    });
+  }
+
+  const rateLimitKey = `recovery-request:${req.ip}`;
+  const rateLimit = consumeRecoveryRateLimit(rateLimitKey, 3);
+  if (!rateLimit.allowed) {
+    res.set('Retry-After', String(rateLimit.retryAfter));
+    return res.status(429).json({
+      sucesso: false,
+      message: 'Muitas solicitações. Tente novamente mais tarde.',
+    });
+  }
+
+  if (!isRecoveryConfigured() || !isEmailServiceConfigured()) {
+    return res.status(503).json({
+      sucesso: false,
+      message: 'A recuperação de senha está temporariamente indisponível.',
+    });
+  }
+
+  try {
+    const recovery = await criarCodigoRecuperacao(email);
+    if (recovery) {
+      queueRecoveryEmail(recovery);
+    }
+
+    return res.status(202).json({
+      sucesso: true,
+      message: 'Se o e-mail estiver cadastrado, você receberá um código de recuperação.',
+    });
+  } catch (error) {
+    console.error('Erro ao solicitar recuperação de senha:', error.code || 'database error');
+    return res.status(500).json({
+      sucesso: false,
+      message: 'Não foi possível processar a solicitação.',
+    });
+  }
+});
+
+app.post('/api/recuperacao-senha/confirmar', async (req, res) => {
+  const email = typeof req.body?.email === 'string' ? req.body.email.trim().toLowerCase() : '';
+  const codigo = typeof req.body?.codigo === 'string' ? req.body.codigo.trim() : '';
+  const novaSenha = typeof req.body?.nova_senha === 'string' ? req.body.nova_senha : '';
+
+  if (!email || email.length > 150 || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+    return res.status(400).json({ sucesso: false, message: 'Informe um e-mail válido.' });
+  }
+  if (!/^\d{8}$/.test(codigo)) {
+    return res.status(400).json({ sucesso: false, message: 'Informe o código de 8 dígitos.' });
+  }
+  if (novaSenha.length < 6 || !/[A-Z]/.test(novaSenha) || Buffer.byteLength(novaSenha, 'utf8') > 72) {
+    return res.status(400).json({
+      sucesso: false,
+      message: 'A senha deve ter pelo menos 6 caracteres, conter uma letra maiúscula e ocupar até 72 bytes.',
+    });
+  }
+  if (!isRecoveryConfigured()) {
+    return res.status(503).json({
+      sucesso: false,
+      message: 'A recuperação de senha está temporariamente indisponível.',
+    });
+  }
+
+  const rateLimitKey = `recovery-confirm:${req.ip}`;
+  const rateLimit = consumeRecoveryRateLimit(rateLimitKey, 5);
+  if (!rateLimit.allowed) {
+    res.set('Retry-After', String(rateLimit.retryAfter));
+    return res.status(429).json({
+      sucesso: false,
+      message: 'Muitas tentativas. Solicite um novo código mais tarde.',
+    });
+  }
+
+  try {
+    const updated = await redefinirSenha(email, codigo, novaSenha);
+    if (!updated) {
+      return res.status(400).json({
+        sucesso: false,
+        message: 'Código inválido ou expirado.',
+      });
+    }
+
+    recoveryRateLimits.delete(rateLimitKey);
+    return res.json({
+      sucesso: true,
+      message: 'Senha redefinida. Faça login com sua nova senha.',
+    });
+  } catch (error) {
+    console.error('Erro ao confirmar recuperação de senha:', error.code || 'database error');
+    return res.status(500).json({
+      sucesso: false,
+      message: 'Não foi possível redefinir a senha.',
     });
   }
 });

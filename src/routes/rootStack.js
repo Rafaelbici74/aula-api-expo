@@ -58,11 +58,11 @@ export default function RootStack() {
         name="recSenha"
         component={RecSenha}
         options={{
-          title: 'My home',
+          title: 'Recuperar senha',
           headerStyle: {
             backgroundColor: theme.header,
           },
-          headerTintColor: '#000',
+          headerTintColor: theme.text,
           headerTitleStyle: {
             fontWeight: 'bold',
           },

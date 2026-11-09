@@ -136,7 +136,7 @@ export default StyleSheet.create({
     paddingVertical: 7,
   },
   tasksButtonText: { fontSize: 12, fontWeight: '700' },
-  columnScroll: { flex: 1 },
+  columnScroll: { flex: 1, minHeight: 0 },
   menuButton: {
     alignItems: 'center',
     height: 26,
