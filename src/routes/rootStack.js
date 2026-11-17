@@ -22,7 +22,7 @@ export default function RootStack() {
           headerStyle: {
             backgroundColor: theme.header,
           },
-          headerTintColor: theme.text,
+          headerTintColor: theme.headerText,
         }
       }
     >
@@ -34,7 +34,7 @@ export default function RootStack() {
           headerStyle: {
             backgroundColor: theme.header,
           },
-          headerTintColor: theme.text,
+          headerTintColor: theme.headerText,
           textAlign: 'center',
         }}
       />
@@ -62,7 +62,7 @@ export default function RootStack() {
           headerStyle: {
             backgroundColor: theme.header,
           },
-          headerTintColor: theme.text,
+          headerTintColor: theme.headerText,
           headerTitleStyle: {
             fontWeight: 'bold',
           },

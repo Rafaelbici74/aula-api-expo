@@ -133,9 +133,9 @@ export default function CadUsuario() {
           disabled={submitting}
         >
           {submitting ? (
-            <ActivityIndicator color="#fff" />
+            <ActivityIndicator color={theme.onPrimary} />
           ) : (
-            <Text style={styles.primaryButtonText}>Cadastrar</Text>
+            <Text style={[styles.primaryButtonText, { color: theme.onPrimary }]}>Cadastrar</Text>
           )}
         </Pressable>
 

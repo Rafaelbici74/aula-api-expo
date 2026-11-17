@@ -1,23 +1,29 @@
 import { StyleSheet } from 'react-native';
+import { themes } from './theme/ThemeContext';
 
-// Tokens visuais compartilhados para manter a identidade das telas consistente.
-export const colors = {
-    primary: '#7f8fe8',
-    primaryDark: '#172554',
-    background: '#f5f7fb',
-    surface: '#ffffff',
-    inputBackground: '#f9fafb',
-    border: '#dbe3f0',
-    text: '#111827',
-    mutedText: '#6b7280',
-    placeholder: '#94a3b8',
-};
+export const colors = themes.light;
 
 export const spacing = {
-    screen: 24,
+    xSmall: 4,
     small: 8,
     medium: 16,
     large: 24,
+    screen: 20,
+};
+
+export const radii = {
+    small: 8,
+    medium: 12,
+    large: 16,
+    pill: 999,
+};
+
+export const fontSizes = {
+    caption: 12,
+    small: 14,
+    body: 16,
+    subtitle: 20,
+    title: 26,
 };
 
 // Estilos reutilizados por telas simples de conteúdo e autenticação.
@@ -56,7 +62,7 @@ const globalStyles = StyleSheet.create({
         backgroundColor: colors.surface,
         borderWidth: 1,
         borderColor: colors.border,
-        borderRadius: 7,
+        borderRadius: radii.small,
         paddingHorizontal: 14,
         fontSize: 15,
         color: colors.text,
@@ -66,7 +72,7 @@ const globalStyles = StyleSheet.create({
         width: '100%',
         maxWidth: 360,
         backgroundColor: colors.surface,
-        borderRadius: 7,
+        borderRadius: radii.medium,
         padding: spacing.medium,
         shadowColor: colors.primaryDark,
         shadowOffset: { width: 0, height: 8 },
@@ -76,18 +82,18 @@ const globalStyles = StyleSheet.create({
     },
     primaryButton: {
         backgroundColor: colors.primary,
-        borderRadius: 7,
+        borderRadius: radii.medium,
         paddingVertical: 14,
         alignItems: 'center',
     },
     primaryButtonText: {
-        color: colors.surface,
+        color: colors.onPrimary,
         fontSize: 16,
         fontWeight: '600',
     },
     logoutButton: {
-        backgroundColor: '#c62828',
-        borderRadius: 7,
+        backgroundColor: colors.danger,
+        borderRadius: radii.medium,
         paddingVertical: 14,
         paddingHorizontal: 28,
         alignItems: 'center',
@@ -97,13 +103,13 @@ const globalStyles = StyleSheet.create({
         opacity: 0.75,
     },
     logoutButtonText: {
-        color: colors.surface,
+        color: colors.onDanger,
         fontSize: 16,
         fontWeight: '600',
     },
     appearanceCard: {
         borderWidth: 1,
-        borderRadius: 12,
+        borderRadius: radii.medium,
         padding: spacing.medium,
         marginBottom: spacing.medium,
     },
@@ -122,7 +128,7 @@ const globalStyles = StyleSheet.create({
     appearanceOption: {
         minHeight: 48,
         borderWidth: 1,
-        borderRadius: 8,
+        borderRadius: radii.small,
         paddingHorizontal: spacing.medium,
         flexDirection: 'row',
         alignItems: 'center',

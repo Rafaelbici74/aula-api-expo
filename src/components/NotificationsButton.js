@@ -140,8 +140,8 @@ export default function NotificationsButton() {
         }}
         style={{
           alignItems: 'center',
-          backgroundColor: unreadCount > 0 ? theme.error : theme.surface,
-          borderColor: unreadCount > 0 ? theme.error : theme.border,
+          backgroundColor: unreadCount > 0 ? theme.danger : theme.surface,
+          borderColor: unreadCount > 0 ? theme.danger : theme.border,
           borderRadius: 22,
           borderWidth: 1,
           elevation: 5,
@@ -157,11 +157,11 @@ export default function NotificationsButton() {
         <Ionicons
           name={unreadCount > 0 ? 'notifications' : 'notifications-outline'}
           size={22}
-          color={unreadCount > 0 ? '#fff' : theme.primaryDark}
+          color={unreadCount > 0 ? theme.onDanger : theme.primaryDark}
         />
         {unreadCount > 0 ? (
-          <View style={{ backgroundColor: theme.primaryDark, borderRadius: 8, height: 16, minWidth: 16, position: 'absolute', right: -3, top: -4 }}>
-            <Text style={{ color: '#fff', fontSize: 10, fontWeight: '700', textAlign: 'center' }}>{unreadCount > 99 ? '99+' : unreadCount}</Text>
+          <View style={{ backgroundColor: theme.statusDone, borderRadius: 8, height: 16, minWidth: 16, position: 'absolute', right: -3, top: -4 }}>
+            <Text style={{ color: theme.onStatus, fontSize: 10, fontWeight: '700', textAlign: 'center' }}>{unreadCount > 99 ? '99+' : unreadCount}</Text>
           </View>
         ) : null}
       </Pressable>

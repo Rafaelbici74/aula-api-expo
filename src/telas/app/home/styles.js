@@ -12,15 +12,15 @@ export default StyleSheet.create({
   },
   contentContainer: {
     alignItems: 'center',
-    paddingHorizontal: 24,
-    paddingBottom: 28,
+    paddingHorizontal: 20,
+    paddingBottom: 24,
   },
   titulo: {
-    fontSize: 26,
+    flex: 1,
+    fontSize: 19,
     fontWeight: '700',
     color: colors.primaryDark,
-    marginTop: 50,
-    textAlign: 'center',
+    marginRight: 8,
   },
   headerInput: {
     width: '100%',
@@ -41,27 +41,23 @@ export default StyleSheet.create({
     elevation: 3,
   },
   filterButton: {
-    minWidth: 96,
+    minHeight: 40,
+    flexDirection: 'row',
     alignItems: 'center',
+    gap: 6,
+    borderWidth: 1,
     borderRadius: 12,
-    paddingHorizontal: 16,
-    paddingVertical: 11,
-    shadowColor: colors.primaryDark,
-    shadowOffset: { width: 0, height: 3 },
-    shadowOpacity: 0.18,
-    shadowRadius: 6,
-    elevation: 3,
+    paddingHorizontal: 12,
   },
-  filterRow: {
+  sectionHeader: {
     width: '100%',
-    alignSelf: 'stretch',
-    alignItems: 'flex-end',
-    marginTop: 14,
-    marginBottom: 4,
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginTop: 20,
   },
   filterButtonText: {
-    color: '#fff',
-    fontSize: 14,
+    color: colors.primary,
+    fontSize: 12,
     fontWeight: '700',
   },
   modalBackdrop: {
@@ -107,12 +103,12 @@ export default StyleSheet.create({
   projetosContainer: {
     width: '100%',
     gap: 12,
-    marginTop: 20,
+    marginTop: 12,
   },
   projetoCard: {
     width: '100%',
     backgroundColor: colors.surface,
-    borderRadius: 7,
+    borderRadius: 16,
     borderWidth: 1,
     borderColor: colors.border,
     padding: 16,
@@ -153,16 +149,16 @@ export default StyleSheet.create({
   projetoStatus: {
     fontSize: 12,
     fontWeight: '700',
-    color: '#fff',
+    color: colors.onStatus,
   },
   projetoStatusAberto: {
-    backgroundColor: '#22c55e',
+    backgroundColor: colors.statusOpen,
   },
   projetoStatusEmAndamento: {
-    backgroundColor: '#f59e0b',
+    backgroundColor: colors.statusInProgress,
   },
   projetoStatusFinalizado: {
-    backgroundColor: '#6366f1',
+    backgroundColor: colors.statusDone,
   },
   loadingContainer: {
     marginTop: 28,
@@ -178,7 +174,7 @@ export default StyleSheet.create({
   emptyState: {
     marginTop: 24,
     padding: 18,
-    borderRadius: 12,
+    borderRadius: 16,
     backgroundColor: colors.surface,
     borderWidth: 1,
     borderColor: colors.border,

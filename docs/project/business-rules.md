@@ -12,5 +12,6 @@
 - Excluir tarefa define `excluida_em` sem apagar o registro; finalizar define status `done` e `concluida_em`.
 - O Kanban mantém `concluida_em` coerente ao mover uma tarefa para `done` ou reabri-la em outro status.
 - Candidaturas usam `pendente`, `aceito` e `rejeitado`; vagas usam `aberta` e `fechada`.
+- Na listagem de projetos, o filtro `Aberto` mostra apenas projetos abertos que aceitam candidaturas. Projetos abertos sem disponibilidade exibem o rótulo visual `Sem vagas disponíveis`; o status armazenado do projeto não é alterado por essa apresentação.
 - Valide limites, duplicidade, disponibilidade, status do projeto e autorização no servidor.
 - Antes de alterar regra de negócio, descreva comportamento atual, novo comportamento e impacto nos dados.

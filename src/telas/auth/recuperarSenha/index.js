@@ -201,9 +201,9 @@ export default function RecSenha() {
               disabled={carregando}
             >
               {carregando ? (
-                <ActivityIndicator color="#fff" />
+                <ActivityIndicator color={theme.onPrimary} />
               ) : (
-                <Text style={styles.primaryButtonText}>
+                <Text style={[styles.primaryButtonText, { color: theme.onPrimary }]}>
                   {codigoSolicitado ? 'Redefinir senha' : 'Enviar código'}
                 </Text>
               )}

@@ -1,6 +1,7 @@
 import { Text, View } from 'react-native';
 
 import { useTheme } from '../theme/ThemeContext';
+import { fontSizes, radii, spacing } from '../stylesGlobal';
 
 export default function AppHeader({ title, children }) {
   const { theme } = useTheme();
@@ -16,10 +17,10 @@ export default function AppHeader({ title, children }) {
 const styles = {
   container: {
     width: '100%',
-    borderRadius: 15,
-    marginTop: 30,
-    paddingHorizontal: 18,
-    paddingVertical: 20,
+    borderRadius: radii.large,
+    marginTop: spacing.medium,
+    paddingHorizontal: spacing.medium,
+    paddingVertical: spacing.medium,
     shadowColor: '#172554',
     shadowOffset: { width: 0, height: 6 },
     shadowOpacity: 0.18,
@@ -27,7 +28,7 @@ const styles = {
     elevation: 4,
   },
   title: {
-    fontSize: 26,
+    fontSize: fontSizes.subtitle,
     fontWeight: '700',
     textAlign: 'center',
   },

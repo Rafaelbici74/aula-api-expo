@@ -1,5 +1,5 @@
 import { StyleSheet } from 'react-native';
-import { colors } from '../../../stylesGlobal';
+import { colors, radii, spacing } from '../../../stylesGlobal';
 
 // Estilos exclusivos do formulário de login e seus links de navegação.
 export default StyleSheet.create({
@@ -8,14 +8,15 @@ export default StyleSheet.create({
     backgroundColor: colors.background,
     justifyContent: 'center',
     alignItems: 'center',
-    paddingHorizontal: 24,
+    paddingHorizontal: spacing.screen,
+    paddingVertical: spacing.large,
   },
   card: {
     width: '100%',
     maxWidth: 360,
     backgroundColor: colors.surface,
-    borderRadius: 7,
-    padding: 10,
+    borderRadius: radii.large,
+    padding: spacing.large,
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 10 },
     shadowOpacity: 0.08,
@@ -37,7 +38,7 @@ export default StyleSheet.create({
     backgroundColor: colors.inputBackground,
     borderWidth: 1,
     borderColor: colors.border,
-    borderRadius: 12,
+    borderRadius: radii.medium,
     paddingHorizontal: 14,
     paddingVertical: 12,
     fontSize: 15,
@@ -46,13 +47,13 @@ export default StyleSheet.create({
   },
   primaryButton: {
     backgroundColor: colors.primary,
-    borderRadius: 7,
+    borderRadius: radii.medium,
     paddingVertical: 14,
     alignItems: 'center',
     marginTop: 8,
   },
   primaryButtonText: {
-    color: colors.surface,
+    color: colors.onPrimary,
     fontSize: 16,
     fontWeight: '600',
   },
@@ -60,7 +61,7 @@ export default StyleSheet.create({
     opacity: 0.7,
   },
   errorText: {
-    color: '#c62828',
+    color: colors.error,
     fontSize: 13,
     marginBottom: 4,
   },

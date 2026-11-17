@@ -34,7 +34,7 @@ function HomeStackNavigator() {
           headerStyle: {
             backgroundColor: theme.header,
           },
-          headerTintColor: theme.text,
+          headerTintColor: theme.headerText,
         }}
       />
     </HomeStack.Navigator>
@@ -57,7 +57,7 @@ function ProjectsStackNavigator() {
         options={{
           title: 'Tarefas do projeto',
           headerStyle: { backgroundColor: theme.header },
-          headerTintColor: theme.text,
+          headerTintColor: theme.headerText,
         }}
       />
     </ProjectsStack.Navigator>

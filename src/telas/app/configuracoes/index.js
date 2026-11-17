@@ -87,11 +87,12 @@ export default function Configuracoes() {
         <Pressable
           style={({ pressed }) => [
             styles.logoutButton,
+            { backgroundColor: theme.danger },
             pressed && styles.logoutButtonPressed,
           ]}
           onPress={handleLogout}
         >
-          <Text style={styles.logoutButtonText}>Sair</Text>
+          <Text style={[styles.logoutButtonText, { color: theme.onDanger }]}>Sair</Text>
         </Pressable>
       </View>
     </View>

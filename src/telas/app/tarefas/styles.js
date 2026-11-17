@@ -1,4 +1,5 @@
 import { StyleSheet } from 'react-native';
+import { colors } from '../../../stylesGlobal';
 
 export default StyleSheet.create({
   screen: { flex: 1 },
@@ -16,12 +17,12 @@ export default StyleSheet.create({
   },
   createButton: {
     alignItems: 'center',
-    borderRadius: 8,
+    borderRadius: 12,
     justifyContent: 'center',
     minHeight: 40,
     paddingHorizontal: 12,
   },
-  createButtonText: { color: '#fff', fontSize: 13, fontWeight: '700' },
+  createButtonText: { color: colors.onPrimary, fontSize: 13, fontWeight: '700' },
   disabledButton: { opacity: 0.55 },
   formModalCard: { maxHeight: '90%' },
   formScroll: { flexShrink: 1 },
@@ -72,7 +73,7 @@ export default StyleSheet.create({
   },
   boardScroll: { flex: 1 },
   column: {
-    borderRadius: 12,
+    borderRadius: 14,
     borderWidth: 1,
     height: '100%',
     padding: 10,
@@ -88,7 +89,7 @@ export default StyleSheet.create({
   columnCount: { fontSize: 13, fontWeight: '600' },
   taskCard: {
     position: 'relative',
-    borderRadius: 10,
+    borderRadius: 12,
     borderWidth: 1,
     marginBottom: 10,
     padding: 12,
@@ -155,7 +156,7 @@ export default StyleSheet.create({
     justifyContent: 'center',
     padding: 20,
   },
-  modalCard: { borderRadius: 14, padding: 20, width: '100%' },
+  modalCard: { borderRadius: 16, padding: 20, width: '100%' },
   modalTitle: { fontSize: 18, fontWeight: '700', marginBottom: 14 },
   memberButton: { borderRadius: 8, borderWidth: 1, marginTop: 8, padding: 12 },
   closeButton: { alignItems: 'flex-end', marginTop: 14 },
