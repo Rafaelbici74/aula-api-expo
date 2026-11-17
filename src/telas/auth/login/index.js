@@ -85,9 +85,9 @@ export default function Login() {
           disabled={carregando}
         >
           {carregando ? (
-            <ActivityIndicator color="#fff" />
+            <ActivityIndicator color={theme.onPrimary} />
           ) : (
-            <Text style={styles.primaryButtonText}>Entrar</Text>
+            <Text style={[styles.primaryButtonText, { color: theme.onPrimary }]}>Entrar</Text>
           )}
         </Pressable>
 

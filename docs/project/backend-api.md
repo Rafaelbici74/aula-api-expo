@@ -9,6 +9,7 @@
 - Reutilize `src/services` e padrões existentes antes de criar serviços novos.
 - Ao criar ou alterar endpoint, atualize o cliente correspondente e documente impacto.
 - Verifique autorização no backend; não confie apenas em controles visuais do mobile.
+- `GET /api/projetos` retorna, entre outros campos, `membros_atuais`, `limite_membros`, `aceita_candidaturas` e `motivo_candidatura_indisponivel`. `aceita_candidaturas` é verdadeiro somente quando o projeto está aberto, abaixo do limite de membros e possui vaga aberta não preenchida.
 
 ## Cadastro de usuários
 

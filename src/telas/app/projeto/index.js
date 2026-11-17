@@ -36,8 +36,13 @@ export default function Projeto() {
     finalizado: 'Finalizado',
   };
 
-  const statusTexto =
-    statusLabel[String(projectData.status || 'aberto').toLowerCase()] || 'Status desconhecido';
+  const projectStatus = String(projectData.status || 'aberto').toLowerCase();
+  const statusTexto = statusLabel[projectStatus] || 'Status desconhecido';
+  const statusColor = projectStatus === 'finalizado'
+    ? theme.statusDone
+    : projectStatus === 'em_andamento'
+      ? theme.statusInProgress
+      : theme.statusOpen;
   const projetoAberto = String(projectData.status || '').toLowerCase() === 'aberto';
   const aceitaCandidaturas = projectData.aceita_candidaturas === 1
     || projectData.aceita_candidaturas === true
@@ -181,8 +186,8 @@ export default function Projeto() {
         <View style={[styles.card, { backgroundColor: theme.surface, borderColor: theme.border, shadowColor: theme.primaryDark }]}>
           <Text style={[styles.title, { color: theme.primaryDark }]}>{projectData.titulo || 'Projeto sem nome'}</Text>
 
-          <View style={styles.statusBadge}>
-            <Text style={styles.statusText}>{statusTexto}</Text>
+          <View style={[styles.statusBadge, { backgroundColor: statusColor }]}>
+            <Text style={[styles.statusText, { color: theme.onStatus }]}>{statusTexto}</Text>
           </View>
 
           <Text style={[styles.description, { color: theme.text }]}>
@@ -310,7 +315,7 @@ export default function Projeto() {
               onPress={() => setApplicationModalVisible(true)}
               disabled={!candidaturaDisponivel || !!pendingApplication || !!acceptedApplication || requesting || loadingApplications}
             >
-              <Text style={styles.joinButtonText}>
+              <Text style={[styles.joinButtonText, { color: candidaturaDisponivel && !pendingApplication ? theme.onPrimary : theme.text }]}>
                 {loadingApplications ? 'Carregando vagas...' : acceptedApplication ? 'Candidatura aceita' : pendingApplication ? 'Candidatura pendente' : 'Pedir para entrar no projeto'}
               </Text>
             </Pressable>
@@ -362,10 +367,10 @@ export default function Projeto() {
                 ]}
                 onPress={() => setSelectedVacancy(vacancy)}
               >
-                <Text style={[styles.vacancyTitle, { color: selectedVacancy?.id === vacancy.id ? '#fff' : theme.text }]}>
+                <Text style={[styles.vacancyTitle, { color: selectedVacancy?.id === vacancy.id ? theme.onPrimary : theme.text }]}>
                   Função {vacancy.funcao_id} - {vacancy.nivel_desejado}
                 </Text>
-                <Text style={[styles.vacancyDescription, { color: selectedVacancy?.id === vacancy.id ? '#fff' : theme.mutedText }]}>
+                <Text style={[styles.vacancyDescription, { color: selectedVacancy?.id === vacancy.id ? theme.onPrimary : theme.mutedText }]}>
                   {vacancy.descricao || 'Sem descrição'} | Disponíveis: {vacancy.disponiveis}/{vacancy.quantidade}
                 </Text>
               </Pressable>

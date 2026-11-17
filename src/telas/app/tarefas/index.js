@@ -544,7 +544,7 @@ export default function Tarefas() {
           onPress={openCreateTask}
           style={[styles.createButton, { backgroundColor: theme.primary }]}
         >
-          <Text style={styles.createButtonText}>Criar tarefa</Text>
+          <Text style={[styles.createButtonText, { color: theme.onPrimary }]}>Criar tarefa</Text>
         </Pressable>
       </View>
       {loading ? (
@@ -791,7 +791,7 @@ export default function Tarefas() {
                       },
                     ]}
                   >
-                    <Text style={{ color: taskPriority === priority ? '#fff' : theme.text }}>{label}</Text>
+                    <Text style={{ color: taskPriority === priority ? theme.onPrimary : theme.text }}>{label}</Text>
                   </Pressable>
                 ))}
               </View>
@@ -850,8 +850,8 @@ export default function Tarefas() {
                 ]}
               >
                 {taskSubmitting
-                  ? <ActivityIndicator color="#fff" />
-                  : <Text style={styles.createButtonText}>{editingTask ? 'Salvar' : 'Criar'}</Text>}
+                  ? <ActivityIndicator color={theme.onPrimary} />
+                  : <Text style={[styles.createButtonText, { color: theme.onPrimary }]}>{editingTask ? 'Salvar' : 'Criar'}</Text>}
               </Pressable>
             </View>
           </View>

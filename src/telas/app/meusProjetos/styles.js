@@ -1,4 +1,5 @@
 import { StyleSheet } from 'react-native';
+import { colors } from '../../../stylesGlobal';
 
 export default StyleSheet.create({
   screen: { flex: 1 },
@@ -13,14 +14,14 @@ export default StyleSheet.create({
     flexWrap: 'wrap',
     gap: 12,
     justifyContent: 'center',
-    marginTop: 22,
+    marginTop: 18,
     width: '100%',
   },
   card: {
-    borderRadius: 12,
+    borderRadius: 16,
     borderWidth: 1,
-    minHeight: 250,
-    padding: 14,
+    minHeight: 0,
+    padding: 16,
     width: '100%',
   },
   title: {
@@ -36,7 +37,7 @@ export default StyleSheet.create({
     paddingVertical: 5,
   },
   statusText: {
-    color: '#fff',
+    color: colors.onStatus,
     fontSize: 11,
     fontWeight: '700',
   },
@@ -47,7 +48,7 @@ export default StyleSheet.create({
     minHeight: 54,
   },
   detail: {
-    fontSize: 12,
+    fontSize: 13,
     fontWeight: '600',
     marginTop: 7,
   },
@@ -68,16 +69,16 @@ export default StyleSheet.create({
   },
   actionButton: {
     alignItems: 'center',
-    borderRadius: 8,
+    borderRadius: 12,
     borderWidth: 1,
     flex: 1,
     justifyContent: 'center',
-    minHeight: 44,
+    minHeight: 48,
     paddingHorizontal: 8,
     paddingVertical: 10,
   },
   actionButtonText: {
-    color: '#ffffff',
+    color: colors.onPrimary,
     fontSize: 13,
     fontWeight: '700',
     textAlign: 'center',
@@ -88,7 +89,7 @@ export default StyleSheet.create({
   },
   stateCard: {
     alignItems: 'center',
-    borderRadius: 12,
+    borderRadius: 16,
     borderWidth: 1,
     marginTop: 28,
     padding: 20,

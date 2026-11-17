@@ -91,8 +91,8 @@ export default function MeusProjetos() {
                   <Text style={[styles.title, { color: theme.primaryDark }]} numberOfLines={2}>
                     {project.titulo || 'Projeto sem nome'}
                   </Text>
-                  <View style={[styles.status, { backgroundColor: status === 'finalizado' ? '#6366f1' : status === 'em_andamento' ? '#f59e0b' : '#22c55e' }]}>
-                    <Text style={styles.statusText}>{statusLabels[status] || 'Status desconhecido'}</Text>
+                  <View style={[styles.status, { backgroundColor: status === 'finalizado' ? theme.statusDone : status === 'em_andamento' ? theme.statusInProgress : theme.statusOpen }]}>
+                    <Text style={[styles.statusText, { color: theme.onStatus }]}>{statusLabels[status] || 'Status desconhecido'}</Text>
                   </View>
                   <Text style={[styles.description, { color: theme.mutedText }]} numberOfLines={3}>
                     {project.descricao || 'Sem descrição disponível.'}
@@ -118,7 +118,7 @@ export default function MeusProjetos() {
                       }}
                       style={[styles.actionButton, { backgroundColor: theme.primary }]}
                     >
-                      <Text style={styles.actionButtonText}>Abrir projeto</Text>
+                      <Text style={[styles.actionButtonText, { color: theme.onPrimary }]}>Abrir projeto</Text>
                     </Pressable>
                     <Pressable
                       onPress={(event) => {

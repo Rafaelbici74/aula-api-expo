@@ -1,4 +1,5 @@
 import { StyleSheet } from 'react-native';
+import { colors, radii, spacing } from '../../../stylesGlobal';
 
 // Estilos da apresentação detalhada de um projeto e de seu status.
 export default StyleSheet.create({
@@ -7,33 +8,33 @@ export default StyleSheet.create({
   },
   container: {
     flex: 1,
-    backgroundColor: '#f5f7fb',
+    backgroundColor: colors.background,
   },
   contentContainer: {
-    paddingBottom: 32,
+    paddingBottom: spacing.large,
   },
   content: {
     width: '100%',
     maxWidth: 420,
     alignSelf: 'center',
-    paddingHorizontal: 20,
-    paddingTop: 24,
+    paddingHorizontal: spacing.screen,
+    paddingTop: spacing.large,
   },
   backButton: {
     marginBottom: 12,
   },
   backButtonText: {
-    color: '#7f8fe8',
+    color: colors.primary,
     fontSize: 16,
     fontWeight: '700',
   },
   card: {
-    backgroundColor: '#ffffff',
-    borderRadius: 16,
-    padding: 20,
+    backgroundColor: colors.surface,
+    borderRadius: radii.large,
+    padding: spacing.large,
     borderWidth: 1,
-    borderColor: '#dbe3f0',
-    shadowColor: '#172554',
+    borderColor: colors.border,
+    shadowColor: colors.primaryDark,
     shadowOffset: { width: 0, height: 6 },
     shadowOpacity: 0.08,
     shadowRadius: 10,
@@ -42,24 +43,24 @@ export default StyleSheet.create({
   title: {
     fontSize: 28,
     fontWeight: '700',
-    color: '#172554',
+    color: colors.primaryDark,
     marginBottom: 12,
   },
   statusBadge: {
     alignSelf: 'flex-start',
-    backgroundColor: '#22c55e',
-    borderRadius: 999,
+    backgroundColor: colors.statusOpen,
+    borderRadius: radii.pill,
     paddingHorizontal: 10,
     paddingVertical: 6,
     marginBottom: 16,
   },
   statusText: {
-    color: '#ffffff',
+    color: colors.onStatus,
     fontSize: 12,
     fontWeight: '700',
   },
   description: {
-    color: '#374151',
+    color: colors.text,
     fontSize: 16,
     lineHeight: 24,
   },
@@ -146,7 +147,7 @@ export default StyleSheet.create({
   },
   dateText: {
     marginTop: 20,
-    color: '#6b7280',
+    color: colors.mutedText,
     fontSize: 14,
   },
   joinButton: {
@@ -156,7 +157,7 @@ export default StyleSheet.create({
     padding: 14,
   },
   joinButtonText: {
-    color: '#fff',
+    color: colors.onPrimary,
     fontWeight: '700',
   },
   joinHint: {

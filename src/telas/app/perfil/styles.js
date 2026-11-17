@@ -12,7 +12,7 @@ export default StyleSheet.create({
 		alignSelf: 'center',
 		alignItems: 'center',
 		backgroundColor: colors.surface,
-		borderRadius: 7,
+		borderRadius: 16,
 		padding: 24,
 		shadowColor: colors.primaryDark,
 		shadowOffset: { width: 0, height: 8 },
@@ -77,7 +77,7 @@ export default StyleSheet.create({
     padding: 24,
   },
   modalCard: {
-    borderRadius: 14,
+    borderRadius: 16,
     padding: 20,
   },
   modalTitle: {
@@ -88,7 +88,7 @@ export default StyleSheet.create({
   bioInput: {
     minHeight: 130,
     borderWidth: 1,
-    borderRadius: 10,
+    borderRadius: 12,
     padding: 12,
     textAlignVertical: 'top',
   },
@@ -98,7 +98,7 @@ export default StyleSheet.create({
   locationSearch: {
     height: 46,
     borderWidth: 1,
-    borderRadius: 8,
+    borderRadius: 12,
     paddingHorizontal: 12,
     marginBottom: 10,
   },
@@ -107,7 +107,7 @@ export default StyleSheet.create({
   },
   locationOption: {
     borderWidth: 1,
-    borderRadius: 8,
+    borderRadius: 12,
     padding: 12,
     marginBottom: 8,
   },

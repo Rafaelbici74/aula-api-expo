@@ -1,3 +1,4 @@
+import { Ionicons } from '@expo/vector-icons';
 import { useEffect, useMemo, useState } from 'react';
 import { Modal, ScrollView, View, Text, TextInput, ActivityIndicator, Pressable } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
@@ -15,6 +16,10 @@ const statusLabelMap = {
   finalizado: 'Finalizado',
 };
 
+function hasAvailableVacancies(project) {
+  return Number(project.aceita_candidaturas) === 1;
+}
+
 // Tela principal: carrega projetos da API e apresenta seus estados de carregamento.
 // Tela principal de projetos exibidos ao usuário.
 export default function Home() {
@@ -31,7 +36,10 @@ export default function Home() {
   const projetosFiltrados = useMemo(() => projetos.filter((projeto) => {
     const status = String(projeto.status || '').toLowerCase();
     const termo = search.trim().toLowerCase();
-    const correspondeStatus = filter === 'todos' || status === filter;
+    const correspondeStatus = filter === 'todos'
+      || (filter === 'aberto'
+        ? status === 'aberto' && hasAvailableVacancies(projeto)
+        : status === filter);
     const correspondeBusca = !termo
       || String(projeto.titulo || '').toLowerCase().includes(termo)
       || String(projeto.descricao || '').toLowerCase().includes(termo);
@@ -82,21 +90,28 @@ export default function Home() {
         />
       </AppHeader>
 
-      <View style={styles.filterRow}>
-        <Pressable
-          style={[styles.filterButton, { backgroundColor: theme.primary }]}
-          onPress={() => {
-            setDraftFilter(filter);
-            setFilterVisible(true);
-          }}
-        >
-          <Text style={styles.filterButtonText}>Filtros{filter !== 'todos' ? `: ${statusLabelMap[filter]}` : ''}</Text>
-        </Pressable>
-      </View>
-
       {/* Área que alterna entre carregamento, erro, lista vazia e resultados. */}
       <View style={styles.projetosSection}>
-        <Text style={[styles.titulo, { color: theme.primaryDark }]}>Projetos disponíveis:</Text>
+        <View style={styles.sectionHeader}>
+          <Text style={[styles.titulo, { color: theme.primaryDark }]}>Projetos disponíveis:</Text>
+          <Pressable
+            accessibilityRole="button"
+            accessibilityLabel={`Filtrar projetos${filter !== 'todos' ? `, filtro atual: ${statusLabelMap[filter]}` : ''}`}
+            onPress={() => {
+              setDraftFilter(filter);
+              setFilterVisible(true);
+            }}
+            style={[
+              styles.filterButton,
+              { backgroundColor: theme.surface, borderColor: theme.border },
+            ]}
+          >
+            <Ionicons name="filter-outline" size={16} color={theme.primary} />
+            <Text style={[styles.filterButtonText, { color: theme.primary }]}>
+              Filtros{filter !== 'todos' ? `: ${statusLabelMap[filter]}` : ''}
+            </Text>
+          </Pressable>
+        </View>
 
         {carregando ? (
           /* Indicador exibido enquanto a API responde. */
@@ -123,12 +138,16 @@ export default function Home() {
             ) : (
               projetosFiltrados.map((projeto) => {
                 const statusKey = String(projeto.status || 'aberto').toLowerCase();
-                const statusText = statusLabelMap[statusKey] || statusKey || 'Status desconhecido';
+                const noVacancies = statusKey === 'aberto' && !hasAvailableVacancies(projeto);
+                const statusText = noVacancies
+                  ? 'Sem vagas disponíveis'
+                  : statusLabelMap[statusKey] || statusKey || 'Status desconhecido';
                 const membrosAtuais = Math.max(0, Number(projeto.membros_atuais || 0));
                 const limiteMembros = Math.max(0, Number(projeto.limite_membros || 0));
                 const membrosFormatados = `${String(membrosAtuais).padStart(2, '0')}/${String(limiteMembros).padStart(2, '0')}`;
-                const statusStyle =
-                  statusKey === 'finalizado'
+                const statusStyle = noVacancies
+                  ? { backgroundColor: theme.danger }
+                  : statusKey === 'finalizado'
                     ? styles.projetoStatusFinalizado
                     : statusKey === 'em_andamento'
                       ? styles.projetoStatusEmAndamento
@@ -142,7 +161,7 @@ export default function Home() {
                   >
                     <Text style={[styles.projetoTitulo, { color: theme.primaryDark }]}>{projeto.titulo || 'Projeto sem nome'}</Text>
                     <View style={[styles.projetoStatusContainer, statusStyle]}>
-                      <Text style={styles.projetoStatus}>{statusText}</Text>
+                      <Text style={[styles.projetoStatus, { color: theme.onStatus }]}>{statusText}</Text>
                     </View>
                     <Text style={[styles.projetoDescricao, { color: theme.mutedText }]}>{projeto.descricao || 'Sem descrição disponível.'}</Text>
                     <Text style={[styles.projetoMembros, { color: theme.mutedText }]}>
@@ -174,7 +193,7 @@ export default function Home() {
                 ]}
                 onPress={() => setDraftFilter(option)}
               >
-                <Text style={[styles.filterOptionText, { color: draftFilter === option ? '#fff' : theme.text }]}>
+                <Text style={[styles.filterOptionText, { color: draftFilter === option ? theme.onPrimary : theme.text }]}>
                   {option === 'todos' ? 'Todos' : statusLabelMap[option]}
                 </Text>
               </Pressable>
